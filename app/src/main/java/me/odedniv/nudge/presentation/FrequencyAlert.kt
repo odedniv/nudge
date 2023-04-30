@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.dialog.Alert
-import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.google.android.horologist.composables.TimePicker
 import java.time.Duration
@@ -24,33 +23,16 @@ import me.odedniv.nudge.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
-fun FrequencyDialog(value: Duration, onDismiss: (Duration?) -> Unit) {
-  val scrollState = rememberScalingLazyListState()
-
-  Dialog(
-    showDialog = true,
-    onDismissRequest = { onDismiss(null) },
-    scrollState = scrollState,
-  ) {
-    FrequencyAlert(
-      value = value,
-      onDismiss = onDismiss,
-      scrollState = scrollState,
-    )
-  }
-}
-
-@Composable
-private fun FrequencyAlert(
+fun FrequencyAlert(
   value: Duration,
-  onDismiss: (Duration?) -> Unit,
+  onDismiss: (Duration) -> Unit,
   scrollState: ScalingLazyListState,
 ) {
-  val context = LocalContext.current
   val frequencyMinimumToastString = stringResource(
     R.string.settings_frequency_minimum_toast,
     Settings.MINIMUM_FREQUENCY.toMinutes()
   )
+  val context = LocalContext.current
 
   Alert(
     title = {
@@ -90,7 +72,7 @@ private fun FrequencyAlert(
 
 @Preview(showBackground = true, widthDp = 227, heightDp = 227)
 @Composable
-fun FrequencyDialogPreview() {
+fun FrequencyAlertPreview() {
   NudgeTheme {
     FrequencyAlert(
       value = Settings.DEFAULT.frequency,

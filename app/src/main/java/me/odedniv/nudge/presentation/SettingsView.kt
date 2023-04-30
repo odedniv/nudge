@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +20,8 @@ import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
+import androidx.wear.compose.material.dialog.Dialog
+import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import me.odedniv.nudge.R
 import me.odedniv.nudge.Settings
@@ -34,27 +37,8 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
     var settings by remember { mutableStateOf(value) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showVibrationDialog by remember { mutableStateOf(false) }
-
-    if (showFrequencyDialog) {
-      FrequencyDialog(
-        value = settings.frequency,
-        onDismiss = {
-          showFrequencyDialog = false
-          if (it == null) return@FrequencyDialog
-          settings = settings.copy(frequency = it).also(onUpdate)
-        }
-      )
-    }
-
-    if (showVibrationDialog) {
-      VibrationDialog(
-        value = settings.vibration,
-        onDismiss = {
-          showVibrationDialog = false
-          settings = settings.copy(vibration = it).also(onUpdate)
-        }
-      )
-    }
+    val scrollState = rememberScalingLazyListState()
+    val context = LocalContext.current
 
     ScalingLazyColumn(
       modifier = Modifier.fillMaxSize(),
@@ -94,6 +78,39 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
           onShowVibrationDialog = { showVibrationDialog = true },
         )
       }
+    }
+
+    Dialog(
+      showDialog = showFrequencyDialog,
+      onDismissRequest = { showFrequencyDialog = false },
+      scrollState = scrollState,
+    ) {
+      FrequencyAlert(
+        value = settings.frequency,
+        onDismiss = {
+          showFrequencyDialog = false
+          settings = settings.copy(frequency = it).also(onUpdate)
+        },
+        scrollState = scrollState,
+      )
+    }
+
+    Dialog(
+      showDialog = showVibrationDialog,
+      onDismissRequest = {
+        showVibrationDialog = false
+        onUpdate(settings)
+      },
+      scrollState = scrollState,
+    ) {
+      VibrationAlert(
+        value = settings.vibration,
+        onUpdate = {
+          settings = settings.copy(vibration = it)
+          it.execute(context)
+        },
+        scrollState = scrollState,
+      )
     }
   }
 }
