@@ -1,6 +1,7 @@
 package me.odedniv.nudge.presentation
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
+import java.time.LocalTime
 import me.odedniv.nudge.R
 import me.odedniv.nudge.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
@@ -87,9 +89,20 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       onDismissRequest = { showFrequencyDialog = false },
       scrollState = scrollState,
     ) {
-      FrequencyAlert(
+      DurationAlert(
         value = settings.frequency,
         onConfirm = {
+          if (it < Settings.MINIMUM_FREQUENCY) {
+            Toast.makeText(
+              context,
+              context.getString(
+                R.string.settings_frequency_minimum_toast,
+                Settings.MINIMUM_FREQUENCY.toMinutes()
+              ),
+              Toast.LENGTH_SHORT
+            ).show()
+            return@DurationAlert
+          }
           showFrequencyDialog = false
           settings = settings.copy(frequency = it).also(onUpdate)
         },
