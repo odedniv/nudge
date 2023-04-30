@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.dialog.Alert
@@ -25,15 +24,16 @@ import me.odedniv.nudge.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
-fun FrequencyDialog(frequency: Duration, onDismiss: (Duration?) -> Unit) {
+fun FrequencyDialog(value: Duration, onDismiss: (Duration?) -> Unit) {
   val scrollState = rememberScalingLazyListState()
+
   Dialog(
     showDialog = true,
     onDismissRequest = { onDismiss(null) },
     scrollState = scrollState,
   ) {
     FrequencyAlert(
-      frequency = frequency,
+      value = value,
       onDismiss = onDismiss,
       scrollState = scrollState,
     )
@@ -42,7 +42,7 @@ fun FrequencyDialog(frequency: Duration, onDismiss: (Duration?) -> Unit) {
 
 @Composable
 private fun FrequencyAlert(
-  frequency: Duration,
+  value: Duration,
   onDismiss: (Duration?) -> Unit,
   scrollState: ScalingLazyListState,
 ) {
@@ -51,13 +51,13 @@ private fun FrequencyAlert(
     R.string.settings_frequency_minimum_toast,
     Settings.MINIMUM_FREQUENCY.toMinutes()
   )
+
   Alert(
     title = {
       Text(
         text = stringResource(R.string.settings_frequency),
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
-        color = MaterialTheme.colors.primary,
       )
     },
     message = {
@@ -65,7 +65,6 @@ private fun FrequencyAlert(
         text = stringResource(R.string.settings_frequency_message),
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
-        color = MaterialTheme.colors.primary,
       )
     },
     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
@@ -73,7 +72,7 @@ private fun FrequencyAlert(
   ) {
     item {
       TimePicker(
-        time = LocalTime.MIN + frequency,
+        time = LocalTime.MIN + value,
         onTimeConfirm = {
           val newFrequency = Duration.between(LocalTime.MIN, it)
           if (newFrequency < Settings.MINIMUM_FREQUENCY) {
@@ -94,7 +93,7 @@ private fun FrequencyAlert(
 fun FrequencyDialogPreview() {
   NudgeTheme {
     FrequencyAlert(
-      frequency = Settings.DEFAULT.frequency,
+      value = Settings.DEFAULT.frequency,
       onDismiss = {},
       scrollState = rememberScalingLazyListState(),
     )

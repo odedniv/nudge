@@ -1,6 +1,5 @@
 package me.odedniv.nudge.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +15,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Chip
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.Text
@@ -31,13 +29,15 @@ private val CHIP_MODIFIER = Modifier
   .padding(4.dp)
 
 @Composable
-fun SettingsView(initialSettings: Settings, onUpdate: (Settings) -> Unit) {
+fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
   NudgeTheme {
-    var settings by remember { mutableStateOf(initialSettings) }
+    var settings by remember { mutableStateOf(value) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
+    var showVibrationDialog by remember { mutableStateOf(false) }
+
     if (showFrequencyDialog) {
       FrequencyDialog(
-        frequency = settings.frequency,
+        value = settings.frequency,
         onDismiss = {
           showFrequencyDialog = false
           if (it == null) return@FrequencyDialog
@@ -45,10 +45,19 @@ fun SettingsView(initialSettings: Settings, onUpdate: (Settings) -> Unit) {
         }
       )
     }
+
+    if (showVibrationDialog) {
+      VibrationDialog(
+        value = settings.vibration,
+        onDismiss = {
+          showVibrationDialog = false
+          settings = settings.copy(vibration = it).also(onUpdate)
+        }
+      )
+    }
+
     ScalingLazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colors.background),
+      modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
     ) {
       item {
@@ -81,7 +90,9 @@ fun SettingsView(initialSettings: Settings, onUpdate: (Settings) -> Unit) {
         )
       }
       item {
-        VibrationChip()
+        VibrationChip(
+          onShowVibrationDialog = { showVibrationDialog = true },
+        )
       }
     }
   }
@@ -132,9 +143,9 @@ private fun FrequencyChip(value: Duration, onShowFrequencyDialog: () -> Unit) {
 }
 
 @Composable
-private fun VibrationChip() {
+private fun VibrationChip(onShowVibrationDialog: () -> Unit) {
   Chip(
-    onClick = { /*TODO*/ },
+    onClick = onShowVibrationDialog,
     label = {
       ChipLabel(stringResource(R.string.settings_vibration))
     },
