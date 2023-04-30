@@ -11,4 +11,13 @@
   <string name="settings_frequency_minutes">Every %d minutes</string>
   <string name="settings_frequency_minimum_toast">Frequency cannot be lower than %d minutes.</string>
   <string name="settings_vibration">Vibration…</string>
+  <string name="settings_running_notification">Notification</string>
+
+  <!-- Notification -->
+  <string name="notification_started">Nudge is running…</string>
+  <string name="notification_stopped">Nudge is paused.</string>
+  <string name="notification_text">Click to change.</string>
+  <string name="notification_start">Start</string>
+  <string name="notification_stop">Pause</string>
+  <string name="notification_settings">Settings</string>
 </resources>

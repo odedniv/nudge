@@ -67,6 +67,14 @@ fun SettingsView(initialSettings: Settings, onUpdate: (Settings) -> Unit) {
         )
       }
       item {
+        RunningNotificationChip(
+          value = settings.runningNotification,
+          onUpdate = {
+            settings = settings.copy(runningNotification = it).also(onUpdate)
+          },
+        )
+      }
+      item {
         FrequencyChip(
           value = settings.frequency,
           onShowFrequencyDialog = { showFrequencyDialog = true },
@@ -86,6 +94,21 @@ private fun StartedChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
     onCheckedChange = onUpdate,
     label = {
       ChipLabel(stringResource(if (value) R.string.settings_stop else R.string.settings_start))
+    },
+    toggleControl = {
+      Switch(checked = value)
+    },
+    modifier = CHIP_MODIFIER,
+  )
+}
+
+@Composable
+private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
+  ToggleChip(
+    checked = value,
+    onCheckedChange = { onUpdate(it) },
+    label = {
+      ChipLabel(stringResource(R.string.settings_running_notification))
     },
     toggleControl = {
       Switch(checked = value)
