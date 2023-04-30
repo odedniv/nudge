@@ -1,0 +1,14 @@
+<resources>
+  <string name="app_name">Nudge</string>
+
+  <!-- SettingsActivity -->
+  <string name="settings_title">Nudge</string>
+  <string name="settings_subtitle">Nudge Settings</string>
+  <string name="settings_start">Start</string>
+  <string name="settings_stop">Stop</string>
+  <string name="settings_frequency">Frequency…</string>
+  <string name="settings_frequency_message">How often would you like to get nudged?</string>
+  <string name="settings_frequency_minutes">Every %d minutes</string>
+  <string name="settings_frequency_minimum_toast">Frequency cannot be lower than %d minutes.</string>
+  <string name="settings_vibration">Vibration…</string>
+</resources>
