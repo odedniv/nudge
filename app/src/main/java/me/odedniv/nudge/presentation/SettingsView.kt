@@ -1,8 +1,10 @@
 package me.odedniv.nudge.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -26,6 +29,7 @@ import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import java.time.LocalTime
+import me.odedniv.nudge.Hours
 import me.odedniv.nudge.R
 import me.odedniv.nudge.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
@@ -39,6 +43,9 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
   NudgeTheme {
     var settings by remember { mutableStateOf(value) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
+    var showHoursStartDialog by remember { mutableStateOf(false) }
+    var showHoursEndDialog by remember { mutableStateOf(false) }
+
     val scrollState = rememberScalingLazyListState()
     val context = LocalContext.current
 
@@ -72,7 +79,14 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       item {
         FrequencyChip(
           value = settings.frequency,
-          onShowFrequencyDialog = { showFrequencyDialog = true },
+          onClick = { showFrequencyDialog = true },
+        )
+      }
+      item {
+        HoursChip(
+          value = settings.hours,
+          onClickStart = { showHoursStartDialog = true },
+          onClickEnd = { showHoursEndDialog = true },
         )
       }
       item {
@@ -93,18 +107,49 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
         value = settings.frequency,
         onConfirm = {
           if (it < Settings.MINIMUM_FREQUENCY) {
-            Toast.makeText(
-              context,
-              context.getString(
-                R.string.settings_frequency_minimum_toast,
-                Settings.MINIMUM_FREQUENCY.toMinutes()
-              ),
-              Toast.LENGTH_SHORT
-            ).show()
+            toastMinimumFrequency(context)
             return@DurationAlert
           }
           showFrequencyDialog = false
           settings = settings.copy(frequency = it).also(onUpdate)
+        },
+        scrollState = scrollState,
+      )
+    }
+
+    Dialog(
+      showDialog = showHoursStartDialog,
+      onDismissRequest = { showHoursStartDialog = false },
+      scrollState = scrollState,
+    ) {
+      LocalTimeAlert(
+        value = settings.hours.start,
+        onConfirm = {
+          if (it >= settings.hours.end) {
+            toastHoursMustBeBefore(context, settings.hours.end)
+            return@LocalTimeAlert
+          }
+          showHoursStartDialog = false
+          settings = settings.copy(hours = settings.hours.copy(start = it)).also(onUpdate)
+        },
+        scrollState = scrollState,
+      )
+    }
+
+    Dialog(
+      showDialog = showHoursEndDialog,
+      onDismissRequest = { showHoursEndDialog = false },
+      scrollState = scrollState,
+    ) {
+      LocalTimeAlert(
+        value = settings.hours.end,
+        onConfirm = {
+          if (it <= settings.hours.start) {
+            toastHoursMustBeAfter(context, settings.hours.start)
+            return@LocalTimeAlert
+          }
+          showHoursEndDialog = false
+          settings = settings.copy(hours = settings.hours.copy(end = it)).also(onUpdate)
         },
         scrollState = scrollState,
       )
@@ -143,9 +188,9 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
 }
 
 @Composable
-private fun FrequencyChip(value: Duration, onShowFrequencyDialog: () -> Unit) {
+private fun FrequencyChip(value: Duration, onClick: () -> Unit) {
   Chip(
-    onClick = onShowFrequencyDialog,
+    onClick = onClick,
     label = {
       ChipLabel(stringResource(R.string.settings_frequency))
     },
@@ -154,6 +199,29 @@ private fun FrequencyChip(value: Duration, onShowFrequencyDialog: () -> Unit) {
     },
     modifier = CHIP_MODIFIER,
   )
+}
+
+@Composable
+private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> Unit) {
+  Row(
+    horizontalArrangement = Arrangement.SpaceEvenly,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = CHIP_MODIFIER,
+  ) {
+    Chip(
+      onClick = onClickStart,
+      label = {
+        Text(value.start.toString())
+      },
+    )
+    Text("-")
+    Chip(
+      onClick = onClickEnd,
+      label = {
+        Text(value.end.toString())
+      },
+    )
+  }
 }
 
 @Composable
@@ -173,6 +241,33 @@ private fun ChipLabel(text: String) {
     text = text,
     modifier = Modifier.fillMaxWidth(),
   )
+}
+
+private fun toastMinimumFrequency(context: Context) {
+  Toast.makeText(
+    context,
+    context.getString(
+      R.string.settings_frequency_minimum_toast,
+      Settings.MINIMUM_FREQUENCY.toMinutes()
+    ),
+    Toast.LENGTH_SHORT
+  ).show()
+}
+
+private fun toastHoursMustBeBefore(context: Context, value: LocalTime) {
+  Toast.makeText(
+    context,
+    context.getString(R.string.settings_hours_must_be_before, value),
+    Toast.LENGTH_SHORT
+  ).show()
+}
+
+private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
+  Toast.makeText(
+    context,
+    context.getString(R.string.settings_hours_must_be_after, value),
+    Toast.LENGTH_SHORT
+  ).show()
 }
 
 @Preview(widthDp = 227, heightDp = 227)

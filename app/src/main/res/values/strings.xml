@@ -10,6 +10,8 @@
   <string name="settings_frequency">Frequency…</string>
   <string name="settings_frequency_minutes">Every %d minutes</string>
   <string name="settings_frequency_minimum_toast">Frequency cannot be lower than %d minutes.</string>
+  <string name="settings_hours_must_be_before">Must be before %s</string>
+  <string name="settings_hours_must_be_after">Must be after %s</string>
   <string name="settings_vibration">Vibration…</string>
 
   <!-- VibrationActivity -->
