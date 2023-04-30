@@ -3,16 +3,13 @@ package me.odedniv.nudge.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,13 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.InlineSlider
 import androidx.wear.compose.material.InlineSliderDefaults
-import androidx.wear.compose.material.Picker
+import androidx.wear.compose.material.RadioButton
 import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.dialog.Alert
-import androidx.wear.compose.material.rememberPickerState
-import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.material.ToggleChip
 import me.odedniv.nudge.R
 import me.odedniv.nudge.Settings
 import me.odedniv.nudge.Vibration
@@ -34,79 +28,59 @@ import me.odedniv.nudge.Vibration.Companion.MAX_AMPLITUDE
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
-fun VibrationAlert(
-  value: Vibration,
-  onUpdate: (Vibration) -> Unit,
-  scrollState: ScalingLazyListState,
-) {
-  Alert(
-    title = {
-      Text(
-        text = stringResource(R.string.settings_vibration),
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-      )
-    },
-    message = {
-      Text(
-        text = stringResource(R.string.settings_vibration_message),
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-      )
-    },
-    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-    scrollState = scrollState,
-  ) {
-    item {
-      StylePicker(
-        value = value.styleIndex,
-        onUpdate = { onUpdate(value.copy(styleIndex = it)) },
-      )
-    }
-    item {
-      SubtitleText(stringResource(R.string.settings_vibration_amplitude))
-    }
-    item {
-      AmplitudeSlider(
-        value = value.amplitude,
-        onUpdate = { onUpdate(value.copy(amplitude = it)) },
-      )
-    }
-  }
-}
+fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
+  var vibration by remember { mutableStateOf(value) }
 
-@Composable
-private fun SubtitleText(text: String) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth(),
-    textAlign = TextAlign.Center,
-  )
-}
-
-@Composable
-private fun StylePicker(value: Int, onUpdate: (Int) -> Unit) {
-  val context = LocalContext.current
-  val state = rememberPickerState(
-    initialNumberOfOptions = Vibration.STYLES_COUNT,
-    initiallySelectedOption = value,
-    repeatItems = false,
-  )
-  val contentDescription by remember {
-    derivedStateOf {
-      context.getString(R.string.settings_vibration_style, state.selectedOption)
+  NudgeTheme {
+    ScalingLazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.Center,
+    ) {
+      item {
+        Text(
+          text = stringResource(R.string.vibration_title),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+          textAlign = TextAlign.Center,
+        )
+      }
+      item {
+        Text(
+          text = stringResource(R.string.vibration_amplitude),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+          textAlign = TextAlign.Center,
+        )
+      }
+      item {
+        AmplitudeSlider(
+          value = vibration.amplitude,
+          onUpdate = { vibration = vibration.copy(amplitude = it).also(onUpdate) },
+        )
+      }
+      for ((styleName, styleResource) in Vibration.STYLE_NAMES_TO_RESOURCES) {
+        item {
+          ToggleChip(
+            checked = styleName == vibration.styleName,
+            onCheckedChange = {
+              if (!it) return@ToggleChip
+              vibration = vibration.copy(styleName = styleName).also(onUpdate)
+            },
+            label = {
+              Text(stringResource(styleResource))
+            },
+            toggleControl = {
+              RadioButton(selected = styleName == vibration.styleName)
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(4.dp),
+          )
+        }
+      }
     }
-  }
-  Picker(
-    state = state,
-    onSelected = { onUpdate(state.selectedOption) },
-    contentDescription = contentDescription,
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(70.dp),
-    separation = 4.dp,
-  ) {
-    Text(stringResource(R.string.settings_vibration_style, it))
   }
 }
 
@@ -119,26 +93,26 @@ private fun AmplitudeSlider(value: Int, onUpdate: (Int) -> Unit) {
     decreaseIcon = {
       Icon(
         InlineSliderDefaults.Decrease,
-        stringResource(R.string.settings_vibration_amplitude_decrease)
+        stringResource(R.string.vibration_amplitude_decrease)
       )
     },
     increaseIcon = {
       Icon(
         InlineSliderDefaults.Increase,
-        stringResource(R.string.settings_vibration_amplitude_increase)
+        stringResource(R.string.vibration_amplitude_increase)
       )
     },
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 4.dp)
+      .padding(bottom = 12.dp),
   )
 }
 
-@Preview(showBackground = true, widthDp = 227, heightDp = 227)
+@Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun VibrationAlertPreview() {
   NudgeTheme {
-    VibrationAlert(
-      value = Settings.DEFAULT.vibration,
-      onUpdate = {},
-      scrollState = rememberScalingLazyListState(),
-    )
+    VibrationView(value = Settings.DEFAULT.vibration, onUpdate = {})
   }
 }

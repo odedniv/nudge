@@ -25,7 +25,7 @@ import me.odedniv.nudge.presentation.theme.NudgeTheme
 @Composable
 fun FrequencyAlert(
   value: Duration,
-  onDismiss: (Duration) -> Unit,
+  onConfirm: (Duration) -> Unit,
   scrollState: ScalingLazyListState,
 ) {
   val frequencyMinimumToastString = stringResource(
@@ -61,7 +61,7 @@ fun FrequencyAlert(
             Toast.makeText(context, frequencyMinimumToastString, Toast.LENGTH_SHORT).show()
             return@TimePicker
           }
-          onDismiss(newFrequency)
+          onConfirm(newFrequency)
         },
         modifier = Modifier.fillMaxWidth(),
         showSeconds = false,
@@ -70,13 +70,13 @@ fun FrequencyAlert(
   }
 }
 
-@Preview(showBackground = true, widthDp = 227, heightDp = 227)
+@Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun FrequencyAlertPreview() {
   NudgeTheme {
     FrequencyAlert(
       value = Settings.DEFAULT.frequency,
-      onDismiss = {},
+      onConfirm = {},
       scrollState = rememberScalingLazyListState(),
     )
   }

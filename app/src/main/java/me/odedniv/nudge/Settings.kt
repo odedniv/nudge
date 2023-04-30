@@ -20,7 +20,7 @@ data class Settings(
       putBoolean(KEY_STARTED, started)
       putBoolean(KEY_RUNNING_NOTIFICATION, runningNotification)
       putLong(KEY_FREQUENCY_SECONDS, frequency.seconds)
-      putInt(KEY_VIBRATION_STYLE_INDEX, vibration.styleIndex)
+      putString(KEY_VIBRATION_STYLE_NAME, vibration.styleName)
       putInt(KEY_VIBRATION_AMPLITUDE, vibration.amplitude)
       apply()
     }
@@ -35,13 +35,13 @@ data class Settings(
     private const val KEY_STARTED = "started"
     private const val KEY_RUNNING_NOTIFICATION = "running_notification"
     private const val KEY_FREQUENCY_SECONDS = "frequency"
-    private const val KEY_VIBRATION_STYLE_INDEX = "vibration_style_index"
+    private const val KEY_VIBRATION_STYLE_NAME = "vibration_style_name"
     private const val KEY_VIBRATION_AMPLITUDE = "vibration_amplitude"
 
     private const val DEFAULT_STARTED = false
     private const val DEFAULT_RUNNING_NOTIFICATION = false
     private val DEFAULT_FREQUENCY: Duration = 1.hours.toJavaDuration()
-    private val DEFAULT_VIBRATION = Vibration(0)
+    private val DEFAULT_VIBRATION = Vibration()
 
     val DEFAULT = Settings(
       started = DEFAULT_STARTED,
@@ -59,7 +59,7 @@ data class Settings(
           runningNotification = getBoolean(KEY_RUNNING_NOTIFICATION, DEFAULT_RUNNING_NOTIFICATION),
           frequency = Duration.ofSeconds(getLong(KEY_FREQUENCY_SECONDS, DEFAULT_FREQUENCY.seconds)),
           vibration = Vibration(
-            styleIndex = getInt(KEY_VIBRATION_STYLE_INDEX, DEFAULT_VIBRATION.styleIndex),
+            styleName = getString(KEY_VIBRATION_STYLE_NAME, DEFAULT_VIBRATION.styleName)!!,
             amplitude = getInt(KEY_VIBRATION_AMPLITUDE, DEFAULT_VIBRATION.amplitude),
           ),
         )

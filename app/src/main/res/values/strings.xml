@@ -8,16 +8,20 @@
   <string name="settings_stop">Stop</string>
   <string name="settings_running_notification">Notification</string>
   <string name="settings_frequency">Frequency…</string>
-  <string name="settings_frequency_message">How often would you like to get nudged?</string>
   <string name="settings_frequency_minutes">Every %d minutes</string>
   <string name="settings_frequency_minimum_toast">Frequency cannot be lower than %d minutes.</string>
   <string name="settings_vibration">Vibration…</string>
-  <string name="settings_vibration_message">How would you like to be nudged?</string>
-  <string name="settings_vibration_amplitude">Amplitude</string>
-  <string name="settings_vibration_amplitude_decrease">Decrease amplitude</string>
-  <string name="settings_vibration_amplitude_increase">Increase amplitude</string>
-  <string name="settings_vibration_style">Style</string>
-  <string name="settings_vibration_style_index">Style %d</string>
+
+  <!-- VibrationActivity -->
+  <string name="vibration_title">How to nudge?</string>
+  <string name="vibration_amplitude">Amplitude</string>
+  <string name="vibration_amplitude_decrease">Decrease amplitude</string>
+  <string name="vibration_amplitude_increase">Increase amplitude</string>
+  <string name="vibration_style_short">Short</string>
+  <string name="vibration_style_medium">Medium</string>
+  <string name="vibration_style_long">Long</string>
+  <string name="vibration_style_212">2–1–2</string>
+  <string name="vibration_style_123">1–2–3</string>
 
   <!-- Notification -->
   <string name="notification_started">Nudge is running…</string>

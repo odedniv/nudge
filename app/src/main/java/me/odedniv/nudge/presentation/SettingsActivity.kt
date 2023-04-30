@@ -29,6 +29,11 @@ class SettingsActivity : ComponentActivity() {
     setContent()
   }
 
+  override fun onResume() {
+    super.onResume()
+    setContent()
+  }
+
   private fun setContent() {
     setContent {
       SettingsView(

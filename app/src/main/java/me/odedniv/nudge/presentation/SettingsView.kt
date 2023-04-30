@@ -1,5 +1,6 @@
 package me.odedniv.nudge.presentation
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +37,6 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
   NudgeTheme {
     var settings by remember { mutableStateOf(value) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
-    var showVibrationDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScalingLazyListState()
     val context = LocalContext.current
 
@@ -75,7 +75,9 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       }
       item {
         VibrationChip(
-          onShowVibrationDialog = { showVibrationDialog = true },
+          onShowVibrationDialog = {
+            context.startActivity(Intent(context, VibrationActivity::class.java))
+          },
         )
       }
     }
@@ -87,27 +89,9 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
     ) {
       FrequencyAlert(
         value = settings.frequency,
-        onDismiss = {
+        onConfirm = {
           showFrequencyDialog = false
           settings = settings.copy(frequency = it).also(onUpdate)
-        },
-        scrollState = scrollState,
-      )
-    }
-
-    Dialog(
-      showDialog = showVibrationDialog,
-      onDismissRequest = {
-        showVibrationDialog = false
-        onUpdate(settings)
-      },
-      scrollState = scrollState,
-    ) {
-      VibrationAlert(
-        value = settings.vibration,
-        onUpdate = {
-          settings = settings.copy(vibration = it)
-          it.execute(context)
         },
         scrollState = scrollState,
       )
@@ -178,7 +162,7 @@ private fun ChipLabel(text: String) {
   )
 }
 
-@Preview(showBackground = true, widthDp = 227, heightDp = 227)
+@Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun SettingsViewPreview() {
   NudgeTheme {
