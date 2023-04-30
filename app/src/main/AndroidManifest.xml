@@ -23,6 +23,15 @@
         android:name="com.google.android.wearable.standalone"
         android:value="true" />
 
+    <receiver
+        android:name=".BootReceiver"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+      </intent-filter>
+    </receiver>
+
     <receiver android:name=".ToggleReceiver" />
 
     <uses-library
@@ -33,6 +42,7 @@
   <uses-feature android:name="android.hardware.type.watch" />
 
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 </manifest>

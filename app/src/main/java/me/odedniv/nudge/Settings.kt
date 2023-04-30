@@ -50,6 +50,10 @@ data class Settings(
         ).also { Scheduler(context).commit(it) }
       }
 
+    fun commit(context: Context) {
+      read(context) // Triggers commit.
+    }
+
     private val Context.preferences: SharedPreferences
       get() = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   }
