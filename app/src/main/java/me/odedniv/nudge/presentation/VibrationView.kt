@@ -21,6 +21,7 @@ import androidx.wear.compose.material.RadioButton
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
+import kotlin.math.min
 import me.odedniv.nudge.R
 import me.odedniv.nudge.Settings
 import me.odedniv.nudge.Vibration
@@ -88,8 +89,8 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
 private fun AmplitudeSlider(value: Int, onUpdate: (Int) -> Unit) {
   InlineSlider(
     value = value,
-    onValueChange = { onUpdate(it) },
-    valueProgression = 0..MAX_AMPLITUDE step (MAX_AMPLITUDE + 1) / 8,
+    onValueChange = { onUpdate(min(it, MAX_AMPLITUDE)) },
+    valueProgression = 0..(MAX_AMPLITUDE + 1) step (MAX_AMPLITUDE + 1) / 8,
     decreaseIcon = {
       Icon(
         InlineSliderDefaults.Decrease,

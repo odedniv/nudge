@@ -37,7 +37,7 @@ class SettingsActivity : ComponentActivity() {
   private fun setContent() {
     setContent {
       SettingsView(
-        value = Settings.read(this),
+        value = Settings.read(this).also { it.commit(this) },
         onUpdate = { it.checkPermissionsAndWrite() },
       )
     }
