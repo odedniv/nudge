@@ -23,9 +23,9 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import kotlin.math.min
 import me.odedniv.nudge.R
-import me.odedniv.nudge.Settings
-import me.odedniv.nudge.Vibration
-import me.odedniv.nudge.Vibration.Companion.MAX_AMPLITUDE
+import me.odedniv.nudge.logic.Settings
+import me.odedniv.nudge.logic.Vibration
+import me.odedniv.nudge.logic.Vibration.Companion.MAX_AMPLITUDE
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable

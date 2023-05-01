@@ -1,4 +1,4 @@
-package me.odedniv.nudge
+package me.odedniv.nudge.logic
 
 import android.content.Context
 import android.os.VibrationEffect
@@ -6,6 +6,7 @@ import android.os.Vibrator
 import androidx.core.content.getSystemService
 import java.time.Duration
 import kotlinx.coroutines.delay
+import me.odedniv.nudge.R
 
 /** (amplitude) -> EffectAndDuration */
 private val STYLES =

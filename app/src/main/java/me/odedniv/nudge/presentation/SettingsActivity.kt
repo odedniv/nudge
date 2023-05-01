@@ -8,8 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import me.odedniv.nudge.Notifications
-import me.odedniv.nudge.Settings
+import me.odedniv.nudge.logic.Notifications
+import me.odedniv.nudge.logic.Settings
 
 class SettingsActivity : ComponentActivity() {
   private lateinit var requestPostNotificationsLauncher: ActivityResultLauncher<String>

@@ -1,4 +1,4 @@
-package me.odedniv.nudge
+package me.odedniv.nudge.logic
 
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.PersistableBundle
 import androidx.core.content.getSystemService
 import java.time.Instant
+import me.odedniv.nudge.services.NudgeJobService
 
 class Scheduler(private val context: Context) {
   private val jobScheduler: JobScheduler by lazy { requireNotNull(context.getSystemService()) }

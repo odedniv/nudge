@@ -1,4 +1,4 @@
-package me.odedniv.nudge
+package me.odedniv.nudge.logic
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import androidx.core.content.getSystemService
+import me.odedniv.nudge.R
 import me.odedniv.nudge.presentation.SettingsActivity
+import me.odedniv.nudge.services.ToggleReceiver
 
 class Notifications(private val context: Context) {
   private val notificationManager: NotificationManager by lazy { requireNotNull(context.getSystemService()) }

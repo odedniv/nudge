@@ -4,14 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
-import me.odedniv.nudge.Settings
-import me.odedniv.nudge.Vibration
+import me.odedniv.nudge.logic.Settings
+import me.odedniv.nudge.logic.Vibration
 
 class VibrationActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

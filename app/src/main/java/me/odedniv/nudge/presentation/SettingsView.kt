@@ -29,9 +29,9 @@ import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import java.time.LocalTime
-import me.odedniv.nudge.Hours
+import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.R
-import me.odedniv.nudge.Settings
+import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 private val CHIP_MODIFIER = Modifier

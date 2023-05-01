@@ -1,14 +1,14 @@
-package me.odedniv.nudge
+package me.odedniv.nudge.services
 
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.util.Log
 import java.time.Instant
 import java.time.LocalTime
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.odedniv.nudge.logic.Settings
 
 class NudgeJobService : JobService() {
   override fun onStartJob(params: JobParameters): Boolean {

@@ -29,17 +29,17 @@
         android:value="true" />
 
     <receiver
-        android:name=".BootReceiver"
+        android:name=".services.BootReceiver"
         android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />
       </intent-filter>
     </receiver>
 
-    <receiver android:name=".ToggleReceiver" />
+    <receiver android:name=".services.ToggleReceiver" />
 
     <service
-        android:name=".NudgeJobService"
+        android:name=".services.NudgeJobService"
         android:permission="android.permission.BIND_JOB_SERVICE" />
 
     <uses-library

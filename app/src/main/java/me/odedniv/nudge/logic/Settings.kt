@@ -1,4 +1,4 @@
-package me.odedniv.nudge
+package me.odedniv.nudge.logic
 
 import android.content.Context
 import android.content.SharedPreferences
