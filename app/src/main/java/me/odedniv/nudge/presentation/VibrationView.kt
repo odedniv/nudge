@@ -37,6 +37,7 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
     ) {
+      // Title
       item {
         Text(
           text = stringResource(R.string.vibration_title),
@@ -44,6 +45,7 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
           textAlign = TextAlign.Center,
         )
       }
+      // vibration.amplitude
       item {
         Text(
           text = stringResource(R.string.vibration_amplitude),
@@ -57,6 +59,7 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
           onUpdate = { vibration = vibration.copy(amplitude = it).also(onUpdate) },
         )
       }
+      // vibration.styleName
       for ((styleName, styleResource) in Vibration.STYLE_NAMES_TO_RESOURCES) {
         item {
           ToggleChip(

@@ -25,7 +25,6 @@ import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
-import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import java.time.LocalTime
@@ -51,31 +50,36 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
     ) {
+      // Title
       item {
         Text(
           text = stringResource(R.string.settings_subtitle),
-          modifier = Modifier.fillMaxWidth().padding(4.dp),
+          modifier = CHIP_MODIFIER,
           textAlign = TextAlign.Center,
         )
       }
+      // settings.started
       item {
         StartedChip(
           value = settings.started,
           onUpdate = { settings = settings.copy(started = it).also(onUpdate) },
         )
       }
+      // settings.runningNotification
       item {
         RunningNotificationChip(
           value = settings.runningNotification,
           onUpdate = { settings = settings.copy(runningNotification = it).also(onUpdate) },
         )
       }
+      // settings.frequency
       item {
         FrequencyChip(
           value = settings.frequency,
           onClick = { showFrequencyDialog = true },
         )
       }
+      // settings.hours
       item {
         HoursChip(
           value = settings.hours,
@@ -83,71 +87,69 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
           onClickEnd = { showHoursEndDialog = true },
         )
       }
+      // settings.vibration
       item {
         VibrationChip(
-          onShowVibrationDialog = {
+          onClick = {
             context.startActivity(Intent(context, VibrationActivity::class.java))
           },
         )
       }
     }
-
-    Dialog(
+    // settings.frequency dialog
+    DurationDialog(
       showDialog = showFrequencyDialog,
-      onDismissRequest = { showFrequencyDialog = false },
-      scrollState = scrollState,
-    ) {
-      DurationAlert(
-        value = settings.frequency,
-        onConfirm = {
-          if (it < Settings.MINIMUM_FREQUENCY) {
-            toastMinimumFrequency(context)
-            return@DurationAlert
-          }
+      value = settings.frequency,
+      onConfirm = {
+        if (it == null) {
           showFrequencyDialog = false
-          settings = settings.copy(frequency = it).also(onUpdate)
-        },
-        scrollState = scrollState,
-      )
-    }
-
-    Dialog(
+          return@DurationDialog
+        }
+        if (it < Settings.MINIMUM_FREQUENCY) {
+          toastMinimumFrequency(context)
+          return@DurationDialog
+        }
+        settings = settings.copy(frequency = it).also(onUpdate)
+        showFrequencyDialog = false
+      },
+      scrollState = scrollState,
+    )
+    // settings.hours.start dialog
+    LocalTimeDialog(
       showDialog = showHoursStartDialog,
-      onDismissRequest = { showHoursStartDialog = false },
-      scrollState = scrollState,
-    ) {
-      LocalTimeAlert(
-        value = settings.hours.start,
-        onConfirm = {
-          if (it >= settings.hours.end) {
-            toastHoursMustBeBefore(context, settings.hours.end)
-            return@LocalTimeAlert
-          }
+      value = settings.hours.start,
+      onConfirm = {
+        if (it == null) {
           showHoursStartDialog = false
-          settings = settings.copy(hours = settings.hours.copy(start = it)).also(onUpdate)
-        },
-        scrollState = scrollState,
-      )
-    }
-
-    Dialog(
-      showDialog = showHoursEndDialog,
-      onDismissRequest = { showHoursEndDialog = false },
+          return@LocalTimeDialog
+        }
+        if (it >= settings.hours.end) {
+          toastHoursMustBeBefore(context, settings.hours.end)
+          return@LocalTimeDialog
+        }
+        settings = settings.copy(hours = settings.hours.copy(start = it)).also(onUpdate)
+        showHoursStartDialog = false
+      },
       scrollState = scrollState,
-    ) {
-      LocalTimeAlert(
-        value = settings.hours.end,
-        onConfirm = {
-          if (it <= settings.hours.start) {
-            toastHoursMustBeAfter(context, settings.hours.start)
-            return@LocalTimeAlert
-          }
+    )
+    // settings.hours.end dialog
+    LocalTimeDialog(
+      showDialog = showHoursEndDialog,
+      value = settings.hours.end,
+      onConfirm = {
+        if (it == null) {
           showHoursEndDialog = false
-          settings = settings.copy(hours = settings.hours.copy(end = it)).also(onUpdate)
-        },
-        scrollState = scrollState,
-      )
-    }
+          return@LocalTimeDialog
+        }
+        if (it <= settings.hours.start) {
+          toastHoursMustBeAfter(context, settings.hours.start)
+          return@LocalTimeDialog
+        }
+        settings = settings.copy(hours = settings.hours.copy(end = it)).also(onUpdate)
+        showHoursEndDialog = false
+      },
+      scrollState = scrollState,
+    )
   }
 }
 
@@ -157,7 +159,7 @@ private fun StartedChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
     checked = value,
     onCheckedChange = onUpdate,
     label = {
-      ChipLabel(stringResource(if (value) R.string.settings_stop else R.string.settings_start))
+      Text(stringResource(if (value) R.string.settings_stop else R.string.settings_start))
     },
     toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
@@ -169,7 +171,7 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
   ToggleChip(
     checked = value,
     onCheckedChange = { onUpdate(it) },
-    label = { ChipLabel(stringResource(R.string.settings_running_notification)) },
+    label = { Text(stringResource(R.string.settings_running_notification)) },
     toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
   )
@@ -179,9 +181,9 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
 private fun FrequencyChip(value: Duration, onClick: () -> Unit) {
   Chip(
     onClick = onClick,
-    label = { ChipLabel(stringResource(R.string.settings_frequency)) },
+    label = { Text(stringResource(R.string.settings_frequency)) },
     secondaryLabel = {
-      ChipLabel(stringResource(R.string.settings_frequency_minutes, value.toMinutes()))
+      Text(stringResource(R.string.settings_frequency_description, value.toMinutes()))
     },
     modifier = CHIP_MODIFIER,
   )
@@ -207,19 +209,11 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
 }
 
 @Composable
-private fun VibrationChip(onShowVibrationDialog: () -> Unit) {
+private fun VibrationChip(onClick: () -> Unit) {
   Chip(
-    onClick = onShowVibrationDialog,
-    label = { ChipLabel(stringResource(R.string.settings_vibration)) },
+    onClick = onClick,
+    label = { Text(stringResource(R.string.settings_vibration)) },
     modifier = CHIP_MODIFIER,
-  )
-}
-
-@Composable
-private fun ChipLabel(text: String) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth(),
   )
 }
 
