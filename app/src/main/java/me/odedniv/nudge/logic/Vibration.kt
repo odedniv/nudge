@@ -26,6 +26,8 @@ data class Vibration(val styleName: String = STYLES.keys.first(), val amplitude:
     delay(duration.toMillis())
   }
 
+  val styleResourceId: Int get() = STYLE_NAMES_TO_RESOURCES[styleName]!!
+
   companion object {
     val STYLE_NAMES_TO_RESOURCES: Map<String, Int> =
       mapOf(

@@ -1,7 +1,6 @@
 package me.odedniv.nudge.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -28,17 +27,22 @@ import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import java.time.LocalTime
+import kotlin.math.roundToInt
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.logic.Settings
+import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 
 @Composable
-fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
+fun SettingsView(
+  value: Settings,
+  onStartVibrationActivity: () -> Unit,
+  onUpdate: (Settings) -> Unit
+) {
   NudgeTheme {
-    var settings by remember { mutableStateOf(value) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showHoursStartDialog by remember { mutableStateOf(false) }
     var showHoursEndDialog by remember { mutableStateOf(false) }
@@ -58,48 +62,54 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
           textAlign = TextAlign.Center,
         )
       }
-      // settings.started
+      // started
       item {
         StartedChip(
-          value = settings.started,
-          onUpdate = { settings = settings.copy(started = it).also(onUpdate) },
+          value = value.started,
+          onUpdate = { value.copy(started = it).also(onUpdate) },
         )
       }
-      // settings.runningNotification
+      // runningNotification
       item {
         RunningNotificationChip(
-          value = settings.runningNotification,
-          onUpdate = { settings = settings.copy(runningNotification = it).also(onUpdate) },
+          value = value.runningNotification,
+          onUpdate = { value.copy(runningNotification = it).also(onUpdate) },
         )
       }
-      // settings.frequency
+      // frequency
       item {
         FrequencyChip(
-          value = settings.frequency,
+          value = value.frequency,
           onClick = { showFrequencyDialog = true },
         )
       }
-      // settings.hours
+      // hours
+      item {
+        Text(
+          text = stringResource(R.string.settings_hours),
+          modifier = CHIP_MODIFIER,
+          textAlign = TextAlign.Center,
+        )
+      }
       item {
         HoursChip(
-          value = settings.hours,
+          value = value.hours,
           onClickStart = { showHoursStartDialog = true },
           onClickEnd = { showHoursEndDialog = true },
         )
       }
-      // settings.vibration
+      // vibration
       item {
         VibrationChip(
-          onClick = {
-            context.startActivity(Intent(context, VibrationActivity::class.java))
-          },
+          value = value.vibration,
+          onClick = onStartVibrationActivity,
         )
       }
     }
-    // settings.frequency dialog
+    // frequency dialog
     DurationDialog(
       showDialog = showFrequencyDialog,
-      value = settings.frequency,
+      value = value.frequency,
       onConfirm = {
         if (it == null) {
           showFrequencyDialog = false
@@ -109,43 +119,43 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
           toastMinimumFrequency(context)
           return@DurationDialog
         }
-        settings = settings.copy(frequency = it).also(onUpdate)
+        value.copy(frequency = it).also(onUpdate)
         showFrequencyDialog = false
       },
       scrollState = scrollState,
     )
-    // settings.hours.start dialog
+    // hours.start dialog
     LocalTimeDialog(
       showDialog = showHoursStartDialog,
-      value = settings.hours.start,
+      value = value.hours.start,
       onConfirm = {
         if (it == null) {
           showHoursStartDialog = false
           return@LocalTimeDialog
         }
-        if (it >= settings.hours.end) {
-          toastHoursMustBeBefore(context, settings.hours.end)
+        if (it >= value.hours.end) {
+          toastHoursMustBeBefore(context, value.hours.end)
           return@LocalTimeDialog
         }
-        settings = settings.copy(hours = settings.hours.copy(start = it)).also(onUpdate)
+        value.copy(hours = value.hours.copy(start = it)).also(onUpdate)
         showHoursStartDialog = false
       },
       scrollState = scrollState,
     )
-    // settings.hours.end dialog
+    // hours.end dialog
     LocalTimeDialog(
       showDialog = showHoursEndDialog,
-      value = settings.hours.end,
+      value = value.hours.end,
       onConfirm = {
         if (it == null) {
           showHoursEndDialog = false
           return@LocalTimeDialog
         }
-        if (it <= settings.hours.start) {
-          toastHoursMustBeAfter(context, settings.hours.start)
+        if (it <= value.hours.start) {
+          toastHoursMustBeAfter(context, value.hours.start)
           return@LocalTimeDialog
         }
-        settings = settings.copy(hours = settings.hours.copy(end = it)).also(onUpdate)
+        value.copy(hours = value.hours.copy(end = it)).also(onUpdate)
         showHoursEndDialog = false
       },
       scrollState = scrollState,
@@ -170,7 +180,7 @@ private fun StartedChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
 private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
   ToggleChip(
     checked = value,
-    onCheckedChange = { onUpdate(it) },
+    onCheckedChange = onUpdate,
     label = { Text(stringResource(R.string.settings_running_notification)) },
     toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
@@ -209,10 +219,19 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
 }
 
 @Composable
-private fun VibrationChip(onClick: () -> Unit) {
+private fun VibrationChip(value: Vibration, onClick: () -> Unit) {
   Chip(
     onClick = onClick,
     label = { Text(stringResource(R.string.settings_vibration)) },
+    secondaryLabel = {
+      Text(
+        stringResource(
+          R.string.settings_vibration_description,
+          stringResource(value.styleResourceId),
+          (100.0 * value.amplitude / Vibration.MAX_AMPLITUDE).roundToInt()
+        )
+      )
+    },
     modifier = CHIP_MODIFIER,
   )
 }
@@ -250,5 +269,5 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
 @Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun SettingsViewPreview() {
-  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}) }
+  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}, onStartVibrationActivity = {}) }
 }
