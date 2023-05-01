@@ -40,18 +40,14 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
       item {
         Text(
           text = stringResource(R.string.vibration_title),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
+          modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
           textAlign = TextAlign.Center,
         )
       }
       item {
         Text(
           text = stringResource(R.string.vibration_amplitude),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
+          modifier = Modifier.fillMaxWidth().padding(4.dp),
           textAlign = TextAlign.Center,
         )
       }
@@ -69,15 +65,9 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
               if (!it) return@ToggleChip
               vibration = vibration.copy(styleName = styleName).also(onUpdate)
             },
-            label = {
-              Text(stringResource(styleResource))
-            },
-            toggleControl = {
-              RadioButton(selected = styleName == vibration.styleName)
-            },
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(4.dp),
+            label = { Text(stringResource(styleResource)) },
+            toggleControl = { RadioButton(selected = styleName == vibration.styleName) },
+            modifier = Modifier.fillMaxWidth().padding(4.dp),
           )
         }
       }
@@ -92,28 +82,17 @@ private fun AmplitudeSlider(value: Int, onUpdate: (Int) -> Unit) {
     onValueChange = { onUpdate(min(it, MAX_AMPLITUDE)) },
     valueProgression = 0..(MAX_AMPLITUDE + 1) step (MAX_AMPLITUDE + 1) / 8,
     decreaseIcon = {
-      Icon(
-        InlineSliderDefaults.Decrease,
-        stringResource(R.string.vibration_amplitude_decrease)
-      )
+      Icon(InlineSliderDefaults.Decrease, stringResource(R.string.vibration_amplitude_decrease))
     },
     increaseIcon = {
-      Icon(
-        InlineSliderDefaults.Increase,
-        stringResource(R.string.vibration_amplitude_increase)
-      )
+      Icon(InlineSliderDefaults.Increase, stringResource(R.string.vibration_amplitude_increase))
     },
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 4.dp)
-      .padding(bottom = 12.dp),
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).padding(bottom = 12.dp),
   )
 }
 
 @Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun VibrationAlertPreview() {
-  NudgeTheme {
-    VibrationView(value = Settings.DEFAULT.vibration, onUpdate = {})
-  }
+  NudgeTheme { VibrationView(value = Settings.DEFAULT.vibration, onUpdate = {}) }
 }

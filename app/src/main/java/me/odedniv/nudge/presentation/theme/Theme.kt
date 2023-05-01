@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
 
 @Composable
-fun NudgeTheme(
-  content: @Composable () -> Unit
-) {
+fun NudgeTheme(content: @Composable () -> Unit) {
   MaterialTheme(
     colors = wearColorPalette,
     typography = Typography,

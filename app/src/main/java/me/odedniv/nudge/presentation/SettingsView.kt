@@ -29,14 +29,12 @@ import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
 import java.time.LocalTime
-import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.R
+import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
-private val CHIP_MODIFIER = Modifier
-  .fillMaxWidth()
-  .padding(4.dp)
+private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 
 @Composable
 fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
@@ -56,9 +54,7 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       item {
         Text(
           text = stringResource(R.string.settings_subtitle),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
+          modifier = Modifier.fillMaxWidth().padding(4.dp),
           textAlign = TextAlign.Center,
         )
       }
@@ -71,9 +67,7 @@ fun SettingsView(value: Settings, onUpdate: (Settings) -> Unit) {
       item {
         RunningNotificationChip(
           value = settings.runningNotification,
-          onUpdate = {
-            settings = settings.copy(runningNotification = it).also(onUpdate)
-          },
+          onUpdate = { settings = settings.copy(runningNotification = it).also(onUpdate) },
         )
       }
       item {
@@ -165,9 +159,7 @@ private fun StartedChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
     label = {
       ChipLabel(stringResource(if (value) R.string.settings_stop else R.string.settings_start))
     },
-    toggleControl = {
-      Switch(checked = value)
-    },
+    toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
   )
 }
@@ -177,12 +169,8 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
   ToggleChip(
     checked = value,
     onCheckedChange = { onUpdate(it) },
-    label = {
-      ChipLabel(stringResource(R.string.settings_running_notification))
-    },
-    toggleControl = {
-      Switch(checked = value)
-    },
+    label = { ChipLabel(stringResource(R.string.settings_running_notification)) },
+    toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
   )
 }
@@ -191,9 +179,7 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
 private fun FrequencyChip(value: Duration, onClick: () -> Unit) {
   Chip(
     onClick = onClick,
-    label = {
-      ChipLabel(stringResource(R.string.settings_frequency))
-    },
+    label = { ChipLabel(stringResource(R.string.settings_frequency)) },
     secondaryLabel = {
       ChipLabel(stringResource(R.string.settings_frequency_minutes, value.toMinutes()))
     },
@@ -210,16 +196,12 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
   ) {
     Chip(
       onClick = onClickStart,
-      label = {
-        Text(value.start.toString())
-      },
+      label = { Text(value.start.toString()) },
     )
     Text("-")
     Chip(
       onClick = onClickEnd,
-      label = {
-        Text(value.end.toString())
-      },
+      label = { Text(value.end.toString()) },
     )
   }
 }
@@ -228,9 +210,7 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
 private fun VibrationChip(onShowVibrationDialog: () -> Unit) {
   Chip(
     onClick = onShowVibrationDialog,
-    label = {
-      ChipLabel(stringResource(R.string.settings_vibration))
-    },
+    label = { ChipLabel(stringResource(R.string.settings_vibration)) },
     modifier = CHIP_MODIFIER,
   )
 }
@@ -245,35 +225,36 @@ private fun ChipLabel(text: String) {
 
 private fun toastMinimumFrequency(context: Context) {
   Toast.makeText(
-    context,
-    context.getString(
-      R.string.settings_frequency_minimum_toast,
-      Settings.MINIMUM_FREQUENCY.toMinutes()
-    ),
-    Toast.LENGTH_SHORT
-  ).show()
+      context,
+      context.getString(
+        R.string.settings_frequency_minimum_toast,
+        Settings.MINIMUM_FREQUENCY.toMinutes()
+      ),
+      Toast.LENGTH_SHORT
+    )
+    .show()
 }
 
 private fun toastHoursMustBeBefore(context: Context, value: LocalTime) {
   Toast.makeText(
-    context,
-    context.getString(R.string.settings_hours_must_be_before, value),
-    Toast.LENGTH_SHORT
-  ).show()
+      context,
+      context.getString(R.string.settings_hours_must_be_before, value),
+      Toast.LENGTH_SHORT
+    )
+    .show()
 }
 
 private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
   Toast.makeText(
-    context,
-    context.getString(R.string.settings_hours_must_be_after, value),
-    Toast.LENGTH_SHORT
-  ).show()
+      context,
+      context.getString(R.string.settings_hours_must_be_after, value),
+      Toast.LENGTH_SHORT
+    )
+    .show()
 }
 
 @Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun SettingsViewPreview() {
-  NudgeTheme {
-    SettingsView(Settings.DEFAULT, onUpdate = {})
-  }
+  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}) }
 }

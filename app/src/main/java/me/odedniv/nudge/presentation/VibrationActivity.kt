@@ -16,21 +16,14 @@ class VibrationActivity : ComponentActivity() {
 
     val executor = MutableSharedFlow<Vibration>(replay = 1, onBufferOverflow = DROP_OLDEST)
 
-    lifecycleScope.launch {
-      executor.collect {
-        it.execute(this@VibrationActivity)
-      }
-    }
+    lifecycleScope.launch { executor.collect { it.execute(this@VibrationActivity) } }
 
     setContent {
       VibrationView(
         value = Settings.read(this).vibration,
         onUpdate = {
           executor.tryEmit(it)
-          Settings
-            .read(this)
-            .copy(vibration = it)
-            .write(this)
+          Settings.read(this).copy(vibration = it).write(this)
         },
       )
     }

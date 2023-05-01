@@ -18,13 +18,14 @@ class SettingsActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    requestPostNotificationsLauncher = registerForActivityResult(RequestPermission()) { granted ->
-      if (granted) {
-        pendingSettings?.write()
-      } else {
-        setContent() // Rollback
+    requestPostNotificationsLauncher =
+      registerForActivityResult(RequestPermission()) { granted ->
+        if (granted) {
+          pendingSettings?.write()
+        } else {
+          setContent() // Rollback
+        }
       }
-    }
     Notifications(this).createChannels()
     setContent()
   }
@@ -46,8 +47,8 @@ class SettingsActivity : ComponentActivity() {
   private fun Settings.checkPermissionsAndWrite() {
     if (
       !runningNotification ||
-      Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-      checkSelfPermission(permission.POST_NOTIFICATIONS) == PERMISSION_GRANTED
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+        checkSelfPermission(permission.POST_NOTIFICATIONS) == PERMISSION_GRANTED
     ) {
       write()
       return

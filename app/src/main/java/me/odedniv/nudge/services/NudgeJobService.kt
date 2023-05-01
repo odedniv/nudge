@@ -32,7 +32,7 @@ class NudgeJobService : JobService() {
 
   private fun Settings.shouldNudge(scheduleTime: Instant): Boolean =
     (Instant.now() > scheduleTime + frequency) &&
-        (LocalTime.now() in hours.start.rangeTo(hours.end))
+      (LocalTime.now() in hours.start.rangeTo(hours.end))
 
   companion object {
     const val EXTRA_SCHEDULE_TIME_SECONDS = "schedule_time_seconds"
