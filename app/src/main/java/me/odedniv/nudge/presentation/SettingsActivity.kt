@@ -1,7 +1,6 @@
 package me.odedniv.nudge.presentation
 
 import android.Manifest.permission
-import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
@@ -18,8 +17,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Notifications
 import me.odedniv.nudge.logic.Settings
+import me.odedniv.nudge.logic.Vibration
 
 class SettingsActivity : ComponentActivity() {
   private lateinit var requestPostNotificationsLauncher: ActivityResultLauncher<String>
@@ -32,10 +36,13 @@ class SettingsActivity : ComponentActivity() {
       registerForActivityResult(RequestPermission()) { granted ->
         if (granted) pendingSettings?.write()
       }
-
     Notifications(this).createChannels()
-
     val initialSettings = readSettings()
+
+    val vibrationExecutor =
+      MutableSharedFlow<Vibration>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    lifecycleScope.launch { vibrationExecutor.collect { it.execute(this@SettingsActivity) } }
+
     setContent {
       var settings by remember { mutableStateOf(initialSettings) }
       ObserveEventChange { event ->
@@ -44,8 +51,8 @@ class SettingsActivity : ComponentActivity() {
 
       SettingsView(
         value = settings,
-        onStartVibrationActivity = { startActivity(Intent(this, VibrationActivity::class.java)) },
         onUpdate = { if (it.checkPermissionsAndWrite()) settings = it },
+        onVibrationUpdate = { vibrationExecutor.tryEmit(it) },
       )
     }
   }

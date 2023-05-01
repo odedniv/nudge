@@ -39,13 +39,14 @@ private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 @Composable
 fun SettingsView(
   value: Settings,
-  onStartVibrationActivity: () -> Unit,
-  onUpdate: (Settings) -> Unit
+  onUpdate: (Settings) -> Unit,
+  onVibrationUpdate: (Vibration) -> Unit,
 ) {
   NudgeTheme {
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showHoursStartDialog by remember { mutableStateOf(false) }
     var showHoursEndDialog by remember { mutableStateOf(false) }
+    var showVibrationDialog by remember { mutableStateOf(false) }
 
     val scrollState = rememberScalingLazyListState()
     val context = LocalContext.current
@@ -66,14 +67,14 @@ fun SettingsView(
       item {
         StartedChip(
           value = value.started,
-          onUpdate = { value.copy(started = it).also(onUpdate) },
+          onUpdate = { onUpdate(value.copy(started = it)) },
         )
       }
       // runningNotification
       item {
         RunningNotificationChip(
           value = value.runningNotification,
-          onUpdate = { value.copy(runningNotification = it).also(onUpdate) },
+          onUpdate = { onUpdate(value.copy(runningNotification = it)) },
         )
       }
       // frequency
@@ -102,7 +103,7 @@ fun SettingsView(
       item {
         VibrationChip(
           value = value.vibration,
-          onClick = onStartVibrationActivity,
+          onClick = { showVibrationDialog = true },
         )
       }
     }
@@ -119,7 +120,7 @@ fun SettingsView(
           toastMinimumFrequency(context)
           return@DurationDialog
         }
-        value.copy(frequency = it).also(onUpdate)
+        onUpdate(value.copy(frequency = it))
         showFrequencyDialog = false
       },
       scrollState = scrollState,
@@ -137,7 +138,7 @@ fun SettingsView(
           toastHoursMustBeBefore(context, value.hours.end)
           return@LocalTimeDialog
         }
-        value.copy(hours = value.hours.copy(start = it)).also(onUpdate)
+        onUpdate(value.copy(hours = value.hours.copy(start = it)))
         showHoursStartDialog = false
       },
       scrollState = scrollState,
@@ -155,9 +156,20 @@ fun SettingsView(
           toastHoursMustBeAfter(context, value.hours.start)
           return@LocalTimeDialog
         }
-        value.copy(hours = value.hours.copy(end = it)).also(onUpdate)
+        onUpdate(value.copy(hours = value.hours.copy(end = it)))
         showHoursEndDialog = false
       },
+      scrollState = scrollState,
+    )
+    // vibration dialog
+    VibrationDialog(
+      showDialog = showVibrationDialog,
+      value = value.vibration,
+      onUpdate = {
+        onUpdate(value.copy(vibration = it))
+        onVibrationUpdate(it)
+      },
+      onDismiss = { showVibrationDialog = false },
       scrollState = scrollState,
     )
   }
@@ -269,5 +281,5 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
 @Preview(widthDp = 227, heightDp = 227)
 @Composable
 fun SettingsViewPreview() {
-  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}, onStartVibrationActivity = {}) }
+  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}, onVibrationUpdate = {}) }
 }

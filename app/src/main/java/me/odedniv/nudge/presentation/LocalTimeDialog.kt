@@ -2,10 +2,9 @@ package me.odedniv.nudge.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.ScalingLazyListState
-import androidx.wear.compose.material.dialog.Alert
 import androidx.wear.compose.material.dialog.Dialog
-import androidx.wear.compose.material.rememberScalingLazyListState
 import com.google.android.horologist.composables.TimePicker
 import java.time.Duration
 import java.time.LocalTime
@@ -23,21 +22,19 @@ fun LocalTimeDialog(
     onDismissRequest = { onConfirm(null) },
     scrollState = scrollState,
   ) {
-    LocalTimeAlert(
+    LocalTimeView(
       value = value,
       onConfirm = onConfirm,
-      scrollState = scrollState,
     )
   }
 }
 
 @Composable
-private fun LocalTimeAlert(
+private fun LocalTimeView(
   value: LocalTime,
   onConfirm: (LocalTime) -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
-  Alert(title = {}, scrollState = scrollState) {
+  ScalingLazyColumn {
     item {
       TimePicker(
         time = value,
@@ -55,40 +52,21 @@ fun DurationDialog(
   onConfirm: (Duration?) -> Unit,
   scrollState: ScalingLazyListState,
 ) {
-  Dialog(
+  LocalTimeDialog(
     showDialog = showDialog,
-    onDismissRequest = { onConfirm(null) },
-    scrollState = scrollState,
-  ) {
-    DurationAlert(
-      value = value,
-      onConfirm = onConfirm,
-      scrollState = scrollState,
-    )
-  }
-}
-
-@Composable
-private fun DurationAlert(
-  value: Duration,
-  onConfirm: (Duration) -> Unit,
-  scrollState: ScalingLazyListState
-) {
-  LocalTimeAlert(
     value = LocalTime.MIN + value,
-    onConfirm = { onConfirm(Duration.between(LocalTime.MIN, it)) },
+    onConfirm = { onConfirm(it?.let { Duration.between(LocalTime.MIN, it) }) },
     scrollState = scrollState,
   )
 }
 
 @Preview(widthDp = 227, heightDp = 227)
 @Composable
-fun LocalTimeAlertPreview() {
+fun LocalTimeViewPreview() {
   NudgeTheme {
-    LocalTimeAlert(
+    LocalTimeView(
       value = LocalTime.of(12, 34),
       onConfirm = {},
-      scrollState = rememberScalingLazyListState(),
     )
   }
 }

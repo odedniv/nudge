@@ -5,10 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -19,8 +15,10 @@ import androidx.wear.compose.material.InlineSlider
 import androidx.wear.compose.material.InlineSliderDefaults
 import androidx.wear.compose.material.RadioButton
 import androidx.wear.compose.material.ScalingLazyColumn
+import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
+import androidx.wear.compose.material.dialog.Dialog
 import kotlin.math.min
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Settings
@@ -29,9 +27,27 @@ import me.odedniv.nudge.logic.Vibration.Companion.MAX_AMPLITUDE
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
-fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
-  var vibration by remember { mutableStateOf(value) }
+fun VibrationDialog(
+  showDialog: Boolean,
+  value: Vibration,
+  onUpdate: (Vibration) -> Unit,
+  onDismiss: () -> Unit,
+  scrollState: ScalingLazyListState,
+) {
+  Dialog(
+    showDialog = showDialog,
+    onDismissRequest = { onDismiss() },
+    scrollState = scrollState,
+  ) {
+    VibrationView(
+      value = value,
+      onUpdate = onUpdate,
+    )
+  }
+}
 
+@Composable
+fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
   NudgeTheme {
     ScalingLazyColumn(
       modifier = Modifier.fillMaxSize(),
@@ -45,7 +61,7 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
           textAlign = TextAlign.Center,
         )
       }
-      // vibration.amplitude
+      // amplitude
       item {
         Text(
           text = stringResource(R.string.vibration_amplitude),
@@ -55,21 +71,21 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
       }
       item {
         AmplitudeSlider(
-          value = vibration.amplitude,
-          onUpdate = { vibration = vibration.copy(amplitude = it).also(onUpdate) },
+          value = value.amplitude,
+          onUpdate = { onUpdate(value.copy(amplitude = it)) },
         )
       }
-      // vibration.styleName
+      // styleName
       for ((styleName, styleResource) in Vibration.STYLE_NAMES_TO_RESOURCES) {
         item {
           ToggleChip(
-            checked = styleName == vibration.styleName,
+            checked = styleName == value.styleName,
             onCheckedChange = {
               if (!it) return@ToggleChip
-              vibration = vibration.copy(styleName = styleName).also(onUpdate)
+              onUpdate(value.copy(styleName = styleName))
             },
             label = { Text(stringResource(styleResource)) },
-            toggleControl = { RadioButton(selected = styleName == vibration.styleName) },
+            toggleControl = { RadioButton(selected = styleName == value.styleName) },
             modifier = Modifier.fillMaxWidth().padding(4.dp),
           )
         }
