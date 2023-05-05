@@ -2,12 +2,16 @@ package me.odedniv.nudge.services
 
 import android.app.job.JobParameters
 import android.app.job.JobService
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.util.Log
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odedniv.nudge.logic.Notifications
 import me.odedniv.nudge.logic.Settings
 
 class NudgeJobService : JobService() {
@@ -20,9 +24,17 @@ class NudgeJobService : JobService() {
       return false
     }
 
+    val notifications = Notifications(this)
+    startForeground(
+      Notifications.NUDGE_ID,
+      notifications.nudgeNotification(),
+      FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+    )
+
     Log.i(TAG, "Nudging for $settings.")
     CoroutineScope(Dispatchers.Main).launch {
       settings.vibration.execute(this@NudgeJobService)
+      delay(DELAY.toMillis())
       jobFinished(params, /* wantsReschedule = */ false)
     }
     return true
@@ -36,6 +48,8 @@ class NudgeJobService : JobService() {
 
   companion object {
     const val EXTRA_SCHEDULE_TIME_SECONDS = "schedule_time_seconds"
+
+    private val DELAY = Duration.ofSeconds(5)
 
     private const val TAG = "NudgeJobService"
   }

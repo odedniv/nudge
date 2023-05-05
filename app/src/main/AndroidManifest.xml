@@ -1,52 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <application
-      android:allowBackup="true"
-      android:icon="@mipmap/ic_launcher"
-      android:label="@string/app_name"
-      android:supportsRtl="true"
-      android:theme="@android:style/Theme.DeviceDefault">
-    <activity
-        android:name=".presentation.SettingsActivity"
-        android:exported="true"
-        android:label="@string/settings_title"
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
 
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
+        <activity
+            android:name=".presentation.SettingsActivity"
+            android:exported="true"
+            android:label="@string/settings_title"
+            android:theme="@android:style/Theme.DeviceDefault">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-    <meta-data
-        android:name="com.google.android.wearable.standalone"
-        android:value="true" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-    <receiver
-        android:name=".services.BootReceiver"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-      </intent-filter>
-    </receiver>
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
 
-    <receiver android:name=".services.ToggleReceiver" />
+        <receiver
+            android:name=".services.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".services.ToggleReceiver" />
 
-    <service
-        android:name=".services.NudgeJobService"
-        android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".services.NudgeJobService"
+            android:foregroundServiceType="mediaPlayback"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-    <uses-library
-        android:name="com.google.android.wearable"
-        android:required="true" />
-  </application>
-
-  <uses-feature android:name="android.hardware.type.watch" />
-
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
+        <uses-library
+            android:name="com.google.android.wearable"
+            android:required="true" />
+    </application>
 
 </manifest>
