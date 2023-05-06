@@ -25,12 +25,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import java.util.concurrent.atomic.AtomicReference
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Notifications
 import me.odedniv.nudge.logic.Settings
-import me.odedniv.nudge.logic.Vibration
 
 class SettingsActivity : ComponentActivity() {
   private val alarmManager: AlarmManager by lazy { requireNotNull(getSystemService()) }
@@ -65,10 +62,6 @@ class SettingsActivity : ComponentActivity() {
     Notifications(this).createChannels()
     val initialSettings = readSettings()
 
-    val vibrationExecutor =
-      MutableSharedFlow<Vibration>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    lifecycleScope.launch { vibrationExecutor.collect { it.execute(this@SettingsActivity) } }
-
     setContent {
       var settings by remember { mutableStateOf(initialSettings) }
       ObserveEventChange { event ->
@@ -81,7 +74,7 @@ class SettingsActivity : ComponentActivity() {
           if (it.requestPermissions()) return@SettingsView
           settings = it.apply { write() }
         },
-        onVibrationUpdate = { vibrationExecutor.tryEmit(it) },
+        onVibrationUpdate = { lifecycleScope.launch { it.execute(this@SettingsActivity) } },
       )
     }
   }

@@ -19,11 +19,9 @@ import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.dialog.Dialog
-import kotlin.math.min
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
-import me.odedniv.nudge.logic.Vibration.Companion.MAX_AMPLITUDE
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
@@ -61,6 +59,23 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
           textAlign = TextAlign.Center,
         )
       }
+      // duration
+      item {
+        Text(
+          text = stringResource(R.string.vibration_duration),
+          modifier = Modifier.fillMaxWidth().padding(4.dp),
+          textAlign = TextAlign.Center,
+        )
+      }
+      item {
+        PercentSlider(
+          value = value.durationMultiplier,
+          valueProgression = 20..100 step 20,
+          decreaseContentDescription = stringResource(R.string.vibration_duration_decrease),
+          increaseContentDescription = stringResource(R.string.vibration_duration_increase),
+          onUpdate = { onUpdate(value.copy(durationMultiplier = it)) },
+        )
+      }
       // amplitude
       item {
         Text(
@@ -70,9 +85,12 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
         )
       }
       item {
-        AmplitudeSlider(
-          value = value.amplitude,
-          onUpdate = { onUpdate(value.copy(amplitude = it)) },
+        PercentSlider(
+          value = value.amplitudeMultiplier,
+          valueProgression = 20..100 step 20,
+          decreaseContentDescription = stringResource(R.string.vibration_amplitude_decrease),
+          increaseContentDescription = stringResource(R.string.vibration_amplitude_increase),
+          onUpdate = { onUpdate(value.copy(amplitudeMultiplier = it)) },
         )
       }
       // styleName
@@ -95,17 +113,19 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
 }
 
 @Composable
-private fun AmplitudeSlider(value: Int, onUpdate: (Int) -> Unit) {
+private fun PercentSlider(
+  value: Float,
+  valueProgression: IntProgression,
+  decreaseContentDescription: String,
+  increaseContentDescription: String,
+  onUpdate: (Float) -> Unit
+) {
   InlineSlider(
-    value = value,
-    onValueChange = { onUpdate(min(it, MAX_AMPLITUDE)) },
-    valueProgression = 0..(MAX_AMPLITUDE + 1) step (MAX_AMPLITUDE + 1) / 8,
-    decreaseIcon = {
-      Icon(InlineSliderDefaults.Decrease, stringResource(R.string.vibration_amplitude_decrease))
-    },
-    increaseIcon = {
-      Icon(InlineSliderDefaults.Increase, stringResource(R.string.vibration_amplitude_increase))
-    },
+    value = (value * 100).toInt(),
+    onValueChange = { onUpdate(it / 100.0f) },
+    valueProgression = valueProgression,
+    decreaseIcon = { Icon(InlineSliderDefaults.Decrease, decreaseContentDescription) },
+    increaseIcon = { Icon(InlineSliderDefaults.Increase, increaseContentDescription) },
     modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).padding(bottom = 12.dp),
   )
 }

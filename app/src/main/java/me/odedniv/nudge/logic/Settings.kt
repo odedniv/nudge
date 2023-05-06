@@ -24,7 +24,8 @@ data class Settings(
       putLong(KEY_HOURS_START_SECONDS, hours.start.toSecondOfDay().toLong())
       putLong(KEY_HOURS_END_SECONDS, hours.end.toSecondOfDay().toLong())
       putString(KEY_VIBRATION_STYLE_NAME, vibration.styleName)
-      putInt(KEY_VIBRATION_AMPLITUDE, vibration.amplitude)
+      putFloat(KEY_VIBRATION_DURATION_MULTIPLIER, vibration.durationMultiplier)
+      putFloat(KEY_VIBRATION_AMPLITUDE_MULTIPLIER, vibration.amplitudeMultiplier)
       apply()
     }
   }
@@ -41,21 +42,23 @@ data class Settings(
     private const val KEY_HOURS_START_SECONDS = "hours_start_seconds"
     private const val KEY_HOURS_END_SECONDS = "hours_end_seconds"
     private const val KEY_VIBRATION_STYLE_NAME = "vibration_style_name"
-    private const val KEY_VIBRATION_AMPLITUDE = "vibration_amplitude"
+    private const val KEY_VIBRATION_DURATION_MULTIPLIER = "vibration_duration_multiplier"
+    private const val KEY_VIBRATION_AMPLITUDE_MULTIPLIER = "vibration_amplitude_multiplier"
 
     private const val DEFAULT_STARTED = false
     private const val DEFAULT_RUNNING_NOTIFICATION = false
     private val DEFAULT_FREQUENCY: Duration = 1.hours.toJavaDuration()
     private val DEFAULT_HOURS = Hours(LocalTime.of(10, 0), LocalTime.of(20, 0))
-    private val DEFAULT_VIBRATION = Vibration()
+    private val DEFAULT_VIBRATION = Vibration.DEFAULT
 
-    val DEFAULT = Settings(
-      started = DEFAULT_STARTED,
-      runningNotification = DEFAULT_RUNNING_NOTIFICATION,
-      frequency = DEFAULT_FREQUENCY,
-      vibration = DEFAULT_VIBRATION,
-      hours = DEFAULT_HOURS,
-    )
+    val DEFAULT =
+      Settings(
+        started = DEFAULT_STARTED,
+        runningNotification = DEFAULT_RUNNING_NOTIFICATION,
+        frequency = DEFAULT_FREQUENCY,
+        vibration = DEFAULT_VIBRATION,
+        hours = DEFAULT_HOURS,
+      )
 
     val MINIMUM_FREQUENCY: Duration = 10.minutes.toJavaDuration()
 
@@ -65,18 +68,25 @@ data class Settings(
           started = getBoolean(KEY_STARTED, DEFAULT_STARTED),
           runningNotification = getBoolean(KEY_RUNNING_NOTIFICATION, DEFAULT_RUNNING_NOTIFICATION),
           frequency = Duration.ofSeconds(getLong(KEY_FREQUENCY_SECONDS, DEFAULT_FREQUENCY.seconds)),
-          hours = Hours(
-            start = LocalTime.ofSecondOfDay(
-              getLong(KEY_HOURS_START_SECONDS, DEFAULT_HOURS.start.toSecondOfDay().toLong())
+          hours =
+            Hours(
+              start =
+                LocalTime.ofSecondOfDay(
+                  getLong(KEY_HOURS_START_SECONDS, DEFAULT_HOURS.start.toSecondOfDay().toLong())
+                ),
+              end =
+                LocalTime.ofSecondOfDay(
+                  getLong(KEY_HOURS_END_SECONDS, DEFAULT_HOURS.end.toSecondOfDay().toLong())
+                ),
             ),
-            end = LocalTime.ofSecondOfDay(
-              getLong(KEY_HOURS_END_SECONDS, DEFAULT_HOURS.end.toSecondOfDay().toLong())
+          vibration =
+            Vibration(
+              styleName = getString(KEY_VIBRATION_STYLE_NAME, DEFAULT_VIBRATION.styleName)!!,
+              durationMultiplier =
+                getFloat(KEY_VIBRATION_DURATION_MULTIPLIER, DEFAULT_VIBRATION.durationMultiplier),
+              amplitudeMultiplier =
+                getFloat(KEY_VIBRATION_AMPLITUDE_MULTIPLIER, DEFAULT_VIBRATION.amplitudeMultiplier),
             ),
-          ),
-          vibration = Vibration(
-            styleName = getString(KEY_VIBRATION_STYLE_NAME, DEFAULT_VIBRATION.styleName)!!,
-            amplitude = getInt(KEY_VIBRATION_AMPLITUDE, DEFAULT_VIBRATION.amplitude),
-          ),
         )
       }
 

@@ -14,16 +14,18 @@
   <string name="settings_hours_must_be_before">Must be before %s</string>
   <string name="settings_hours_must_be_after">Must be after %s</string>
   <string name="settings_vibration">Vibration…</string>
-  <string name="settings_vibration_description">%s at %d%%</string>
+  <string name="settings_vibration_description">%s at %d%% for %.1fs</string>
 
   <!-- VibrationActivity -->
   <string name="vibration_title">How to nudge?</string>
   <string name="vibration_amplitude">Amplitude</string>
   <string name="vibration_amplitude_decrease">Decrease amplitude</string>
   <string name="vibration_amplitude_increase">Increase amplitude</string>
-  <string name="vibration_style_short">Short</string>
-  <string name="vibration_style_medium">Medium</string>
-  <string name="vibration_style_long">Long</string>
+  <string name="vibration_duration">Duration</string>
+  <string name="vibration_duration_decrease">Decrease duration</string>
+  <string name="vibration_duration_increase">Increase duration</string>
+  <string name="vibration_style_solid">Solid</string>
+  <string name="vibration_style_111">1–1–1</string>
   <string name="vibration_style_212">2–1–2</string>
   <string name="vibration_style_123">1–2–3</string>
 
