@@ -2,6 +2,7 @@ package me.odedniv.nudge.logic
 
 import android.app.Notification
 import android.app.NotificationChannel
+import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.NotificationManager.IMPORTANCE_LOW
@@ -11,6 +12,8 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import androidx.core.content.getSystemService
 import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 import me.odedniv.nudge.R
 import me.odedniv.nudge.presentation.SettingsActivity
 import me.odedniv.nudge.services.ToggleReceiver
@@ -20,7 +23,7 @@ class Notifications(private val context: Context) {
     requireNotNull(context.getSystemService())
   }
 
-  fun createChannels() {
+  fun createChannels(settings: Settings) {
     notificationManager.createNotificationChannel(
       NotificationChannel(
         RUNNING_CHANNEL_ID,
@@ -28,14 +31,24 @@ class Notifications(private val context: Context) {
         IMPORTANCE_LOW
       )
     )
-    notificationManager.createNotificationChannel(
-      NotificationChannel(
-          NUDGE_CHANNEL_ID,
-          context.getString(R.string.notifications_nudge),
-          IMPORTANCE_HIGH
-        )
-        .apply { enableVibration(false) }
-    )
+    // Re-create channel group to remove all previous channels.
+    notificationManager.deleteNotificationChannelGroup(NUDGE_CHANNEL_GROUP_ID)
+    NotificationChannelGroup(
+        NUDGE_CHANNEL_GROUP_ID,
+        context.getString(R.string.notifications_nudge),
+      )
+      .also { notificationManager.createNotificationChannelGroup(it) }
+    // Create the channel.
+    NotificationChannel(
+        /* id = */ settings.vibration.id,
+        /* name = */ settings.vibration.id,
+        IMPORTANCE_HIGH,
+      )
+      .apply {
+        group = NUDGE_CHANNEL_GROUP_ID
+        vibrationPattern = settings.vibration.pattern
+      }
+      .also { notificationManager.createNotificationChannel(it) }
   }
 
   fun running(started: Boolean) {
@@ -64,13 +77,18 @@ class Notifications(private val context: Context) {
     notificationManager.cancel(RUNNING_ID)
   }
 
-  fun nudge(duration: Duration) {
+  fun nudge(vibration: Vibration) {
     notificationManager.notify(
       NUDGE_ID,
-      Notification.Builder(context, NUDGE_CHANNEL_ID)
+      Notification.Builder(context, /* channelId = */ vibration.id)
         .setContentTitle(context.getString(R.string.notifications_nudge))
-        .setTimeoutAfter(duration.toMillis())
         .setSmallIcon(R.mipmap.ic_launcher)
+        .setCategory(Notification.CATEGORY_ALARM)
+        .setTimeoutAfter((vibration.duration + NUDGE_TIMEOUT_BUFFER).toMillis())
+        .setActions(stopAction, settingsAction)
+        .setAutoCancel(true)
+        // Unused except to show heads-up display.
+        .setFullScreenIntent(headsUpPendingIntent, /* highPriority = */ true)
         .build()
     )
   }
@@ -101,6 +119,15 @@ class Notifications(private val context: Context) {
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
+  private val headsUpPendingIntent
+    get() =
+      PendingIntent.getActivity(
+        context,
+        /* requestCode = */ 0,
+        Intent(context, SettingsActivity::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+
   private val settingsAction
     get() =
       Notification.Action.Builder(
@@ -119,7 +146,9 @@ class Notifications(private val context: Context) {
     private const val RUNNING_CHANNEL_ID = "running"
     private const val RUNNING_ID = 1
 
-    private const val NUDGE_CHANNEL_ID = "nudge"
+    private const val NUDGE_CHANNEL_GROUP_ID = "nudge"
     const val NUDGE_ID = 2
+
+    private val NUDGE_TIMEOUT_BUFFER: Duration = 5.seconds.toJavaDuration()
   }
 }

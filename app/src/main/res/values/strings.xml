@@ -14,13 +14,10 @@
   <string name="settings_hours_must_be_before">Must be before %s</string>
   <string name="settings_hours_must_be_after">Must be after %s</string>
   <string name="settings_vibration">Vibration…</string>
-  <string name="settings_vibration_description">%s at %d%% for %.1fs</string>
+  <string name="settings_vibration_description">%s for %.2f seconds</string>
 
   <!-- VibrationActivity -->
   <string name="vibration_title">How to nudge?</string>
-  <string name="vibration_amplitude">Amplitude</string>
-  <string name="vibration_amplitude_decrease">Decrease amplitude</string>
-  <string name="vibration_amplitude_increase">Increase amplitude</string>
   <string name="vibration_duration">Duration</string>
   <string name="vibration_duration_decrease">Decrease duration</string>
   <string name="vibration_duration_increase">Increase duration</string>
@@ -34,7 +31,7 @@
   <string name="notifications_running_stopped">Nudge is paused.</string>
   <string name="notifications_running_text">Click to change.</string>
   <string name="notifications_running_start">Start</string>
-  <string name="notifications_running_stop">Pause</string>
+  <string name="notifications_running_stop">Stop</string>
   <string name="notifications_running_settings">Settings</string>
 
   <string name="notifications_nudge">Nudge!</string>

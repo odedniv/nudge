@@ -28,18 +28,19 @@ data class Settings(
       putLong(KEY_HOURS_END_SECONDS, hours.end.toSecondOfDay().toLong())
       putString(KEY_VIBRATION_STYLE_NAME, vibration.styleName)
       putFloat(KEY_VIBRATION_DURATION_MULTIPLIER, vibration.durationMultiplier)
-      putFloat(KEY_VIBRATION_AMPLITUDE_MULTIPLIER, vibration.amplitudeMultiplier)
       apply()
     }
   }
 
   fun commit() {
-    Scheduler(context!!).commit(this)
+    context!!
+    Notifications(context).createChannels(this)
+    Scheduler(context).commit(this)
   }
 
   companion object {
     /** Allow shorter minimum frequency. */
-    const val DEBUG = true
+    const val DEBUG = false
 
     private const val SHARED_PREFERENCES_NAME = "main"
     private const val KEY_STARTED = "started"
@@ -49,7 +50,6 @@ data class Settings(
     private const val KEY_HOURS_END_SECONDS = "hours_end_seconds"
     private const val KEY_VIBRATION_STYLE_NAME = "vibration_style_name"
     private const val KEY_VIBRATION_DURATION_MULTIPLIER = "vibration_duration_multiplier"
-    private const val KEY_VIBRATION_AMPLITUDE_MULTIPLIER = "vibration_amplitude_multiplier"
 
     private const val DEFAULT_STARTED = false
     private const val DEFAULT_RUNNING_NOTIFICATION = false
@@ -97,8 +97,6 @@ data class Settings(
               styleName = getString(KEY_VIBRATION_STYLE_NAME, DEFAULT_VIBRATION.styleName)!!,
               durationMultiplier =
                 getFloat(KEY_VIBRATION_DURATION_MULTIPLIER, DEFAULT_VIBRATION.durationMultiplier),
-              amplitudeMultiplier =
-                getFloat(KEY_VIBRATION_AMPLITUDE_MULTIPLIER, DEFAULT_VIBRATION.amplitudeMultiplier),
             ),
         )
       }

@@ -13,14 +13,23 @@ data class Vibration(
   private val context: Context?,
   val styleName: String,
   val durationMultiplier: Float,
-  val amplitudeMultiplier: Float,
 ) {
+  val id: String
+    get() =
+      context!!.getString(
+        R.string.settings_vibration_description,
+        context.getString(styleResourceId),
+        duration.toMillis() / 1000.0,
+      )
+
   suspend fun execute() {
     val vibrator: Vibrator = requireNotNull(context!!.getSystemService())
     vibrator.cancel()
     vibrator.vibrate(vibrationEffect)
     delay(timings.sum())
   }
+
+  val pattern: LongArray by lazy { timings }
 
   val styleResourceId: Int
     get() = STYLE_NAMES_TO_RESOURCES[styleName] ?: DEFAULT.styleResourceId
@@ -30,28 +39,20 @@ data class Vibration(
   private val style: VibrationEffectDescription by lazy { STYLES[styleName] ?: DEFAULT.style }
 
   private val vibrationEffect by lazy {
-    VibrationEffect.createWaveform(
-      /* timings = */ timings,
-      /* amplitudes = */ amplitudes,
-      /* repeat = */ -1,
-    )
+    VibrationEffect.createWaveform(/* timings = */ timings, /* repeat = */ -1)
   }
 
   private val timings: LongArray by lazy {
-    style.map { (it.first * durationMultiplier * 1000).toLong() }.toLongArray()
-  }
-
-  private val amplitudes: IntArray by lazy {
-    style.map { (it.second * amplitudeMultiplier * 255).toInt() }.toIntArray()
+    style.map { (it * durationMultiplier * 1000).toLong() }.toLongArray()
   }
 
   companion object {
-    /** name -> List(Pair<duration multiplier, amplitude multiplier>) */
+    /** name -> List(Pair<duration multiplier>) */
     private val STYLES =
       mapOf<String, VibrationEffectDescription>(
-        "solid" to listOf(1.0 to 1.0),
-        "212" to listOf(0.4 to 1.0, 0.4 to 0.0, 0.4 to 0.5, 0.4 to 0.0, 0.4 to 1.0),
-        "123" to listOf(0.4 to 0.5, 0.4 to 0.0, 0.4 to 0.75, 0.4 to 0.0, 0.4 to 1.0),
+        "solid" to listOf(0.0, 1.0), // 1s: ----
+        "212" to listOf(0.0, 0.45, 0.45, 0.2, 0.45, 0.45), // 2s: --  -  --
+        "123" to listOf(0.0, 0.2, 0.35, 0.35, 0.35, 0.75), // 2s: -  --  ----
       )
 
     val STYLE_NAMES_TO_RESOURCES: Map<String, Int> =
@@ -67,9 +68,8 @@ data class Vibration(
         context = null,
         styleName = STYLES.keys.first(),
         durationMultiplier = 0.5f,
-        amplitudeMultiplier = 0.5f,
       )
   }
 }
 
-private typealias VibrationEffectDescription = List<Pair<Double, Double>>
+private typealias VibrationEffectDescription = List<Double>

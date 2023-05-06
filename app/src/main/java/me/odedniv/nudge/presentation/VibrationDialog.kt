@@ -70,27 +70,10 @@ fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
       item {
         PercentSlider(
           value = value.durationMultiplier,
-          valueProgression = 20..100 step 20,
+          valueProgression = 25..100 step 25,
           decreaseContentDescription = stringResource(R.string.vibration_duration_decrease),
           increaseContentDescription = stringResource(R.string.vibration_duration_increase),
           onUpdate = { onUpdate(value.copy(durationMultiplier = it)) },
-        )
-      }
-      // amplitude
-      item {
-        Text(
-          text = stringResource(R.string.vibration_amplitude),
-          modifier = Modifier.fillMaxWidth().padding(4.dp),
-          textAlign = TextAlign.Center,
-        )
-      }
-      item {
-        PercentSlider(
-          value = value.amplitudeMultiplier,
-          valueProgression = 20..100 step 20,
-          decreaseContentDescription = stringResource(R.string.vibration_amplitude_decrease),
-          increaseContentDescription = stringResource(R.string.vibration_amplitude_increase),
-          onUpdate = { onUpdate(value.copy(amplitudeMultiplier = it)) },
         )
       }
       // styleName

@@ -240,7 +240,6 @@ private fun VibrationChip(value: Vibration, onClick: () -> Unit) {
         stringResource(
           R.string.settings_vibration_description,
           stringResource(value.styleResourceId),
-          (100.0 * value.amplitudeMultiplier).roundToInt(),
           value.duration.toMillis() / 1000.0,
         )
       )

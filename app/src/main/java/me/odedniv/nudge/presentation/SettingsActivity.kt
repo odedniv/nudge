@@ -59,7 +59,6 @@ class SettingsActivity : ComponentActivity() {
         }
       }
 
-    Notifications(this).createChannels()
     val initialSettings = Settings.commit(this)
 
     setContent {
@@ -80,16 +79,14 @@ class SettingsActivity : ComponentActivity() {
   }
 
   private fun Settings.requestPermissions(): Boolean {
-    if (started) {
-      if (!canScheduleExactAlarm) {
-        pendingSettings.set(this)
-        requestPermissionIntentLauncher.launch(
-          Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setData(Uri.parse("package:$packageName"))
-        )
-        return true
-      }
+    if (started && !canScheduleExactAlarm) {
+      pendingSettings.set(this)
+      requestPermissionIntentLauncher.launch(
+        Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setData(Uri.parse("package:$packageName"))
+      )
+      return true
     }
-    if (runningNotification && !canPostNotifications) {
+    if ((started || runningNotification) && !canPostNotifications) {
       pendingSettings.set(this)
       requestPermissionLauncher.launch(permission.POST_NOTIFICATIONS)
       return true
