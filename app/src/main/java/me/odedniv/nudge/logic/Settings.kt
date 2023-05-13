@@ -57,7 +57,7 @@ data class Settings(
       hours = DEFAULT_HOURS,
     )
 
-    val MINIMUM_FREQUENCY: Duration = 15.minutes.toJavaDuration()
+    val MINIMUM_FREQUENCY: Duration = 10.minutes.toJavaDuration()
 
     fun read(context: Context): Settings =
       with(context.preferences) {

@@ -1,33 +1,36 @@
 package me.odedniv.nudge.logic
 
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
+import android.app.AlarmManager
+import android.app.AlarmManager.AlarmClockInfo
+import android.app.PendingIntent
 import android.content.Context
-import android.os.PersistableBundle
+import android.content.Intent
+import android.os.Build
+import android.util.Log
 import androidx.core.content.getSystemService
+import java.time.Duration
 import java.time.Instant
-import me.odedniv.nudge.services.NudgeJobService
+import me.odedniv.nudge.presentation.SettingsActivity
+import me.odedniv.nudge.services.NudgeReceiver
 
 class Scheduler(private val context: Context) {
-  private val jobScheduler: JobScheduler by lazy { requireNotNull(context.getSystemService()) }
+  private val alarmManager: AlarmManager by lazy { requireNotNull(context.getSystemService()) }
   private val notifications: Notifications by lazy { Notifications(context) }
 
   fun commit(settings: Settings) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+      Log.e(TAG, "No permission to schedule exact alarm.")
+      return
+    }
     if (settings.started) {
-      jobScheduler.schedule(
-        JobInfo.Builder(JOB_ID, ComponentName(context, NudgeJobService::class.java))
-          .setPeriodic(settings.frequency.toMillis())
-          .setPersisted(true)
-          .setExtras(
-            PersistableBundle().apply {
-              putLong(NudgeJobService.EXTRA_SCHEDULE_TIME_SECONDS, Instant.now().epochSecond)
-            }
-          )
-          .build()
+      val nextTrigger = settings.nextTrigger()
+      Log.i(TAG, "Scheduling next nudge for: $nextTrigger")
+      alarmManager.setAlarmClock(
+        AlarmClockInfo(nextTrigger.toEpochMilli(), settingsPendingIntent),
+        nudgePendingIntent
       )
     } else {
-      jobScheduler.cancel(JOB_ID)
+      alarmManager.cancel(nudgePendingIntent)
     }
     if (settings.runningNotification) {
       notifications.running(settings.started)
@@ -36,7 +39,30 @@ class Scheduler(private val context: Context) {
     }
   }
 
+  private val nudgePendingIntent
+    get() =
+      PendingIntent.getBroadcast(
+        context,
+        /* requestCode = */ 0,
+        Intent(context, NudgeReceiver::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+
+  private val settingsPendingIntent
+    get() =
+      PendingIntent.getActivity(
+        context,
+        /* requestCode = */ 0,
+        Intent(context, SettingsActivity::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+
+  private fun Settings.nextTrigger(): Instant {
+    val now = Instant.now()
+    return (now + frequency) - Duration.ofMillis(now.toEpochMilli() % frequency.toMillis())
+  }
+
   companion object {
-    private const val JOB_ID = 1
+    private const val TAG = "Scheduler"
   }
 }

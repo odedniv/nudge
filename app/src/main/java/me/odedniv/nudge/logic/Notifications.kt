@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import androidx.core.content.getSystemService
+import java.time.Duration
 import me.odedniv.nudge.R
 import me.odedniv.nudge.presentation.SettingsActivity
 import me.odedniv.nudge.services.ToggleReceiver
@@ -29,10 +30,11 @@ class Notifications(private val context: Context) {
     )
     notificationManager.createNotificationChannel(
       NotificationChannel(
-        NUDGE_CHANNEL_ID,
-        context.getString(R.string.notifications_nudge),
-        IMPORTANCE_HIGH
-      )
+          NUDGE_CHANNEL_ID,
+          context.getString(R.string.notifications_nudge),
+          IMPORTANCE_HIGH
+        )
+        .apply { enableVibration(false) }
     )
   }
 
@@ -58,14 +60,19 @@ class Notifications(private val context: Context) {
     )
   }
 
-  fun nudgeNotification() =
-    Notification.Builder(context, NUDGE_CHANNEL_ID)
-      .setContentTitle(context.getString(R.string.notifications_nudge))
-      .setSmallIcon(R.mipmap.ic_launcher)
-      .build()
-
   fun cancelRunning() {
     notificationManager.cancel(RUNNING_ID)
+  }
+
+  fun nudge(duration: Duration) {
+    notificationManager.notify(
+      NUDGE_ID,
+      Notification.Builder(context, NUDGE_CHANNEL_ID)
+        .setContentTitle(context.getString(R.string.notifications_nudge))
+        .setTimeoutAfter(duration.toMillis())
+        .setSmallIcon(R.mipmap.ic_launcher)
+        .build()
+    )
   }
 
   private val startAction
