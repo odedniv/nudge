@@ -8,6 +8,7 @@ import androidx.wear.compose.material.dialog.Dialog
 import com.google.android.horologist.composables.TimePicker
 import java.time.Duration
 import java.time.LocalTime
+import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
@@ -39,7 +40,7 @@ private fun LocalTimeView(
       TimePicker(
         time = value,
         onTimeConfirm = onConfirm,
-        showSeconds = false,
+        showSeconds = Settings.DEBUG,
       )
     }
   }

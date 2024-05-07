@@ -60,12 +60,12 @@ class SettingsActivity : ComponentActivity() {
       }
 
     Notifications(this).createChannels()
-    val initialSettings = readSettings()
+    val initialSettings = Settings.commit(this)
 
     setContent {
       var settings by remember { mutableStateOf(initialSettings) }
       ObserveEventChange { event ->
-        if (event == Lifecycle.Event.ON_RESUME) settings = readSettings()
+        if (event == Lifecycle.Event.ON_RESUME) settings = Settings.commit(this)
       }
 
       SettingsView(
@@ -74,13 +74,10 @@ class SettingsActivity : ComponentActivity() {
           if (it.requestPermissions()) return@SettingsView
           settings = it.apply { write() }
         },
-        onVibrationUpdate = { lifecycleScope.launch { it.execute(this@SettingsActivity) } },
+        onVibrationUpdate = { lifecycleScope.launch { it.execute() } },
       )
     }
   }
-
-  private fun readSettings() =
-    Settings.read(this@SettingsActivity).also { it.commit(this@SettingsActivity) }
 
   private fun Settings.requestPermissions(): Boolean {
     if (started) {
@@ -105,10 +102,6 @@ class SettingsActivity : ComponentActivity() {
     if (pendingSettings.started && !canScheduleExactAlarm) return
     if (pendingSettings.runningNotification && !canPostNotifications) return
     pendingSettings.write()
-  }
-
-  private fun Settings.write() {
-    write(this@SettingsActivity)
   }
 }
 

@@ -1,5 +1,6 @@
 package me.odedniv.nudge.logic
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -9,23 +10,24 @@ import kotlinx.coroutines.delay
 import me.odedniv.nudge.R
 
 data class Vibration(
+  private val context: Context?,
   val styleName: String,
   val durationMultiplier: Float,
   val amplitudeMultiplier: Float,
 ) {
-  suspend fun execute(context: Context) {
-    val vibrator: Vibrator = requireNotNull(context.getSystemService())
+  suspend fun execute() {
+    val vibrator: Vibrator = requireNotNull(context!!.getSystemService())
     vibrator.cancel()
     vibrator.vibrate(vibrationEffect)
     delay(timings.sum())
   }
 
   val styleResourceId: Int
-    get() = STYLE_NAMES_TO_RESOURCES[styleName]!!
+    get() = STYLE_NAMES_TO_RESOURCES[styleName] ?: DEFAULT.styleResourceId
 
   val duration: Duration by lazy { Duration.ofMillis(timings.sum()) }
 
-  private val style: VibrationEffectDescription by lazy { STYLES[styleName]!! }
+  private val style: VibrationEffectDescription by lazy { STYLES[styleName] ?: DEFAULT.style }
 
   private val vibrationEffect by lazy {
     VibrationEffect.createWaveform(
@@ -59,8 +61,10 @@ data class Vibration(
         "123" to R.string.vibration_style_123,
       )
 
+    @SuppressLint("StaticFieldLeak") // context is null
     val DEFAULT =
       Vibration(
+        context = null,
         styleName = STYLES.keys.first(),
         durationMultiplier = 0.5f,
         amplitudeMultiplier = 0.5f,
