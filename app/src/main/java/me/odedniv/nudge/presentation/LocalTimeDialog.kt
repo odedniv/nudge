@@ -1,6 +1,7 @@
 package me.odedniv.nudge.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.ScalingLazyListState
@@ -14,16 +15,19 @@ import me.odedniv.nudge.presentation.theme.NudgeTheme
 @Composable
 fun LocalTimeDialog(
   showDialog: Boolean,
+  showSeconds: Boolean,
   value: LocalTime,
-  onConfirm: (LocalTime?) -> Unit,
+  onConfirm: (LocalTime) -> Unit,
+  onDismiss: () -> Unit,
   scrollState: ScalingLazyListState,
 ) {
   Dialog(
     showDialog = showDialog,
-    onDismissRequest = { onConfirm(null) },
+    onDismissRequest = onDismiss,
     scrollState = scrollState,
   ) {
     LocalTimeView(
+      showSeconds = showSeconds,
       value = value,
       onConfirm = onConfirm,
     )
@@ -31,7 +35,27 @@ fun LocalTimeDialog(
 }
 
 @Composable
+fun DurationDialog(
+  showDialog: Boolean,
+  showSeconds: Boolean,
+  value: Duration,
+  onConfirm: (Duration) -> Unit,
+  onDismiss: () -> Unit,
+  scrollState: ScalingLazyListState,
+) {
+  LocalTimeDialog(
+    showDialog = showDialog,
+    showSeconds = showSeconds,
+    value = LocalTime.MIN + value,
+    onConfirm = { onConfirm(Duration.between(LocalTime.MIN, it)) },
+    onDismiss = onDismiss,
+    scrollState = scrollState,
+  )
+}
+
+@Composable
 private fun LocalTimeView(
+  showSeconds: Boolean,
   value: LocalTime,
   onConfirm: (LocalTime) -> Unit,
 ) {
@@ -40,32 +64,18 @@ private fun LocalTimeView(
       TimePicker(
         time = value,
         onTimeConfirm = onConfirm,
-        showSeconds = Settings.DEBUG,
+        showSeconds = showSeconds,
       )
     }
   }
 }
 
-@Composable
-fun DurationDialog(
-  showDialog: Boolean,
-  value: Duration,
-  onConfirm: (Duration?) -> Unit,
-  scrollState: ScalingLazyListState,
-) {
-  LocalTimeDialog(
-    showDialog = showDialog,
-    value = LocalTime.MIN + value,
-    onConfirm = { onConfirm(it?.let { Duration.between(LocalTime.MIN, it) }) },
-    scrollState = scrollState,
-  )
-}
-
-@Preview(widthDp = 227, heightDp = 227)
+@Preview(device = Devices.WEAR_OS_LARGE_ROUND)
 @Composable
 fun LocalTimeViewPreview() {
   NudgeTheme {
     LocalTimeView(
+      showSeconds = true,
       value = LocalTime.of(12, 34),
       onConfirm = {},
     )

@@ -24,13 +24,12 @@ class Notifications(private val context: Context) {
   }
 
   fun createChannels(settings: Settings) {
-    notificationManager.createNotificationChannel(
-      NotificationChannel(
+    NotificationChannel(
         RUNNING_CHANNEL_ID,
         context.getString(R.string.notifications_running_started),
         IMPORTANCE_LOW
       )
-    )
+      .also { notificationManager.createNotificationChannel(it) }
     // Re-create channel group to remove all previous channels.
     notificationManager.deleteNotificationChannelGroup(NUDGE_CHANNEL_GROUP_ID)
     NotificationChannelGroup(
@@ -47,6 +46,7 @@ class Notifications(private val context: Context) {
       .apply {
         group = NUDGE_CHANNEL_GROUP_ID
         vibrationPattern = settings.vibration.pattern
+        setBypassDnd(true)
       }
       .also { notificationManager.createNotificationChannel(it) }
   }

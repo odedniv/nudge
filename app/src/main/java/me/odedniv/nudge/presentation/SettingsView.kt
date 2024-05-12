@@ -17,21 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Chip
+import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.rememberScalingLazyListState
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalTime
-import kotlin.math.roundToInt
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
+import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
@@ -39,10 +42,12 @@ private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 @Composable
 fun SettingsView(
   value: Settings,
+  now: Instant,
   onUpdate: (Settings) -> Unit,
   onVibrationUpdate: (Vibration) -> Unit,
 ) {
   NudgeTheme {
+    var showOneOffDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showHoursStartDialog by remember { mutableStateOf(false) }
     var showHoursEndDialog by remember { mutableStateOf(false) }
@@ -55,19 +60,24 @@ fun SettingsView(
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
     ) {
-      // Title
+      // title
+      item { TitleText(R.string.settings_title) }
+      // one-off
       item {
-        Text(
-          text = stringResource(R.string.settings_subtitle),
-          modifier = CHIP_MODIFIER,
-          textAlign = TextAlign.Center,
+        OneOffChip(
+          value = value.oneOff,
+          now = now,
+          onClick = { showOneOffDialog = true },
         )
       }
-      // started
+      // periodic title
+      item { TitleText(R.string.settings_periodic_title) }
+      // periodic toggle
       item {
-        StartedChip(
-          value = value.started,
-          onUpdate = { onUpdate(value.copy(started = it)) },
+        PeriodicChip(
+          value = value.periodic,
+          enabled = !value.oneOff.isEnabled(now),
+          onUpdate = { onUpdate(value.copy(periodic = it)) },
         )
       }
       // runningNotification
@@ -99,6 +109,8 @@ fun SettingsView(
           onClickEnd = { showHoursEndDialog = true },
         )
       }
+      // common title
+      item { TitleText(R.string.settings_common_title) }
       // vibration
       item {
         VibrationChip(
@@ -107,15 +119,21 @@ fun SettingsView(
         )
       }
     }
+    // one-off dialog
+    OneOffDialog(
+      showDialog = showOneOffDialog,
+      value = value.oneOff,
+      now = now,
+      onUpdate = { onUpdate(value.copy(oneOff = it)) },
+      onDismiss = { showOneOffDialog = false },
+      scrollState = scrollState,
+    )
     // frequency dialog
     DurationDialog(
       showDialog = showFrequencyDialog,
+      showSeconds = Settings.DEBUG,
       value = value.frequency,
       onConfirm = {
-        if (it == null) {
-          showFrequencyDialog = false
-          return@DurationDialog
-        }
         if (it < Settings.MINIMUM_FREQUENCY) {
           toastMinimumFrequency(context)
           return@DurationDialog
@@ -123,17 +141,15 @@ fun SettingsView(
         onUpdate(value.copy(frequency = it))
         showFrequencyDialog = false
       },
+      onDismiss = { showFrequencyDialog = false },
       scrollState = scrollState,
     )
     // hours.start dialog
     LocalTimeDialog(
       showDialog = showHoursStartDialog,
+      showSeconds = false,
       value = value.hours.start,
       onConfirm = {
-        if (it == null) {
-          showHoursStartDialog = false
-          return@LocalTimeDialog
-        }
         if (it >= value.hours.end) {
           toastHoursMustBeBefore(context, value.hours.end)
           return@LocalTimeDialog
@@ -141,17 +157,15 @@ fun SettingsView(
         onUpdate(value.copy(hours = value.hours.copy(start = it)))
         showHoursStartDialog = false
       },
+      onDismiss = { showHoursStartDialog = false },
       scrollState = scrollState,
     )
     // hours.end dialog
     LocalTimeDialog(
       showDialog = showHoursEndDialog,
+      showSeconds = false,
       value = value.hours.end,
       onConfirm = {
-        if (it == null) {
-          showHoursEndDialog = false
-          return@LocalTimeDialog
-        }
         if (it <= value.hours.start) {
           toastHoursMustBeAfter(context, value.hours.start)
           return@LocalTimeDialog
@@ -159,6 +173,7 @@ fun SettingsView(
         onUpdate(value.copy(hours = value.hours.copy(end = it)))
         showHoursEndDialog = false
       },
+      onDismiss = { showHoursEndDialog = false },
       scrollState = scrollState,
     )
     // vibration dialog
@@ -176,12 +191,49 @@ fun SettingsView(
 }
 
 @Composable
-private fun StartedChip(value: Boolean, onUpdate: (Boolean) -> Unit) {
+private fun TitleText(resourceId: Int) {
+  Text(
+    text = stringResource(resourceId),
+    modifier = CHIP_MODIFIER,
+    textAlign = TextAlign.Center,
+  )
+}
+
+@Composable
+private fun OneOffChip(value: Settings.OneOff, now: Instant, onClick: () -> Unit) {
+  val elapsed =
+    (if (value.startedAt != null) value.elapsed(now) else null)?.let {
+      if (it < value.total) it else null
+    }
+
+  Chip(
+    onClick = onClick,
+    label = { Text(stringResource(R.string.settings_one_off)) },
+    colors =
+      if (elapsed == null || value.pausedAt == null) ChipDefaults.primaryChipColors()
+      else ChipDefaults.secondaryChipColors(), // paused
+    secondaryLabel = {
+      if (elapsed != null) {
+        Text(
+          stringResource(R.string.settings_one_off_running, elapsed.format(), value.total.format())
+        )
+      }
+    },
+    modifier = CHIP_MODIFIER,
+  )
+}
+
+@Composable
+private fun PeriodicChip(value: Boolean, enabled: Boolean, onUpdate: (Boolean) -> Unit) {
   ToggleChip(
     checked = value,
     onCheckedChange = onUpdate,
+    enabled = enabled,
     label = {
-      Text(stringResource(if (value) R.string.settings_stop else R.string.settings_start))
+      Text(
+        if (!value) stringResource(R.string.settings_periodic_start)
+        else stringResource(R.string.settings_periodic_stop)
+      )
     },
     toggleControl = { Switch(checked = value) },
     modifier = CHIP_MODIFIER,
@@ -278,8 +330,15 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
     .show()
 }
 
-@Preview(widthDp = 227, heightDp = 227)
+@Preview(device = Devices.WEAR_OS_LARGE_ROUND)
 @Composable
 fun SettingsViewPreview() {
-  NudgeTheme { SettingsView(Settings.DEFAULT, onUpdate = {}, onVibrationUpdate = {}) }
+  NudgeTheme {
+    SettingsView(
+      value = Settings.DEFAULT,
+      now = Instant.EPOCH,
+      onUpdate = {},
+      onVibrationUpdate = {},
+    )
+  }
 }

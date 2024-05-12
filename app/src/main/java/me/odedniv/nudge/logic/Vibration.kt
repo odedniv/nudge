@@ -6,6 +6,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.getSystemService
 import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 import kotlinx.coroutines.delay
 import me.odedniv.nudge.R
 
@@ -61,6 +63,8 @@ data class Vibration(
         "212" to R.string.vibration_style_212,
         "123" to R.string.vibration_style_123,
       )
+
+    val MAXIMUM_DURATION: Duration = STYLES.values.maxOf { it.sum() }.seconds.toJavaDuration()
 
     @SuppressLint("StaticFieldLeak") // context is null
     val DEFAULT =

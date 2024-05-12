@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Icon
@@ -45,7 +46,7 @@ fun VibrationDialog(
 }
 
 @Composable
-fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
+private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
   NudgeTheme {
     ScalingLazyColumn(
       modifier = Modifier.fillMaxSize(),
@@ -113,7 +114,7 @@ private fun PercentSlider(
   )
 }
 
-@Preview(widthDp = 227, heightDp = 227)
+@Preview(device = Devices.WEAR_OS_LARGE_ROUND)
 @Composable
 fun VibrationAlertPreview() {
   NudgeTheme { VibrationView(value = Settings.DEFAULT.vibration, onUpdate = {}) }

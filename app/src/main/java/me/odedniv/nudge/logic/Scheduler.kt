@@ -22,8 +22,8 @@ class Scheduler(private val context: Context) {
       Log.e(TAG, "No permission to schedule exact alarm.")
       return
     }
-    if (settings.started) {
-      val nextTrigger = settings.nextTrigger()
+    val nextTrigger = settings.nextTrigger()
+    if (nextTrigger != null) {
       Log.i(TAG, "Scheduling next nudge for: $nextTrigger")
       alarmManager.setAlarmClock(
         AlarmClockInfo(nextTrigger.toEpochMilli(), settingsPendingIntent),
@@ -33,7 +33,7 @@ class Scheduler(private val context: Context) {
       alarmManager.cancel(nudgePendingIntent)
     }
     if (settings.runningNotification) {
-      notifications.running(settings.started)
+      notifications.running(settings.periodic)
     } else {
       notifications.cancelRunning()
     }
@@ -57,9 +57,18 @@ class Scheduler(private val context: Context) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
 
-  private fun Settings.nextTrigger(): Instant {
+  private fun Settings.nextTrigger(): Instant? {
     val now = Instant.now()
-    return (now + frequency) - Duration.ofMillis(now.toEpochMilli() % frequency.toMillis())
+    val oneOffNextElapsedIndex = oneOff.nextElapsedIndex(now)
+    if (oneOffNextElapsedIndex != null) {
+      // Scheduling with one-off.
+      if (oneOff.pausedAt != null) return null
+      return oneOff.startedAt!! + oneOff.durations.take(oneOffNextElapsedIndex).sum()
+    } else if (periodic) {
+      // Scheduling with periodic.
+      return (now + frequency) - Duration.ofMillis(now.toEpochMilli() % frequency.toMillis())
+    }
+    return null
   }
 
   companion object {
