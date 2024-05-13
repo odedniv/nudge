@@ -1,15 +1,14 @@
 package me.odedniv.nudge.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.dialog.Dialog
+import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.horologist.composables.TimePicker
 import java.time.Duration
 import java.time.LocalTime
-import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 @Composable
@@ -70,7 +69,7 @@ private fun LocalTimeView(
   }
 }
 
-@Preview(device = Devices.WEAR_OS_LARGE_ROUND)
+@Preview(device = WearDevices.LARGE_ROUND)
 @Composable
 fun LocalTimeViewPreview() {
   NudgeTheme {

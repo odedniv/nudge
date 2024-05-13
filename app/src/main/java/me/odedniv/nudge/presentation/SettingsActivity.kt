@@ -13,10 +13,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +24,6 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
-import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Settings
@@ -105,7 +102,7 @@ class SettingsActivity : ComponentActivity() {
 }
 
 @Composable
-fun ObserveEventChange(onEvent: (Lifecycle.Event) -> Unit) {
+private fun ObserveEventChange(onEvent: (Lifecycle.Event) -> Unit) {
   val lifecycleOwner = LocalLifecycleOwner.current
 
   DisposableEffect(lifecycleOwner) {

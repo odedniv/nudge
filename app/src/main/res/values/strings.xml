@@ -26,9 +26,6 @@
     <string name="one_off_resume">Resume</string>
     <string name="one_off_stop">Stop</string>
     <string name="one_off_durations_title">When to nudge?</string>
-    <string name="one_off_duration_hours">%d hours</string>
-    <string name="one_off_duration_minutes">%d minutes</string>
-    <string name="one_off_duration_seconds">%d seconds</string>
     <string name="one_off_duration_delete">Delete</string>
     <string name="one_off_duration_add">Add</string>
     <string name="one_off_minimum_duration_toast">Duration cannot be lower than %d seconds.</string>
