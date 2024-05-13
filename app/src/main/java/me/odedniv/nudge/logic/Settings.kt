@@ -158,4 +158,6 @@ data class Settings(
   }
 }
 
-data class Hours(val start: LocalTime, val end: LocalTime)
+data class Hours(val start: LocalTime, val end: LocalTime) {
+  operator fun contains(value: LocalTime) = start <= value && value < end
+}
