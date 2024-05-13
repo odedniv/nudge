@@ -84,7 +84,7 @@ class Notifications(private val context: Context) {
         .setContentTitle(context.getString(R.string.notifications_nudge))
         .setSmallIcon(R.mipmap.ic_launcher)
         .setCategory(Notification.CATEGORY_ALARM)
-        .setTimeoutAfter((vibration.duration + NUDGE_TIMEOUT_BUFFER).toMillis())
+        .setTimeoutAfter((vibration.totalDuration + NUDGE_TIMEOUT_BUFFER).toMillis())
         .setActions(stopAction, settingsAction)
         .setAutoCancel(true)
         // Unused except to show heads-up display.

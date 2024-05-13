@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -89,6 +90,7 @@ private fun OneOffView(
   val isEnabled = value.isEnabled(now)
   val isRunning = value.isRunning(now)
   val nextElapsedIndex = value.nextElapsedIndex(now)
+  val elapsed = value.elapsed(now)
 
   ScalingLazyColumn {
     if (isEnabled) {
@@ -126,11 +128,15 @@ private fun OneOffView(
     // elapsed
     item {
       Text(
-        stringResource(
-          if (isRunning) R.string.settings_one_off_running else R.string.settings_one_off_paused,
-          (value.elapsed(now) ?: Duration.ZERO).format(),
-          value.durations.sum().format()
-        ),
+        if (isEnabled) {
+          stringResource(
+            R.string.settings_one_off_running,
+            elapsed!!.format(),
+            value.durations.sum().format()
+          )
+        } else {
+          stringResource(R.string.settings_one_off_paused, value.total.format())
+        },
         textAlign = TextAlign.Center,
         modifier = CHIP_MODIFIER,
       )
@@ -147,7 +153,8 @@ private fun OneOffView(
     for ((index, duration) in value.durations.withIndex()) {
       item {
         DurationChip(
-          duration,
+          value = duration,
+          index = index,
           allowDelete = !isEnabled,
           past = nextElapsedIndex?.let { index < it } ?: false,
           onDelete = {
@@ -172,7 +179,7 @@ private fun OneOffView(
         toastMinimumDuration(context)
         return@DurationDialog
       }
-      onUpdate(value.copy(durations = value.durations + it))
+      onUpdate(value.copy(durations = value.durations + it, startedAt = null))
       showDurationDialog = false
     },
     onDismiss = { showDurationDialog = false },
@@ -182,7 +189,8 @@ private fun OneOffView(
 
 @Composable
 private fun DurationChip(
-  duration: Duration,
+  value: Duration,
+  index: Int,
   allowDelete: Boolean,
   past: Boolean,
   onDelete: () -> Unit,
@@ -194,15 +202,21 @@ private fun DurationChip(
     modifier = Modifier.fillMaxWidth(),
   ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-      Text(text = duration.format(), modifier = Modifier.weight(1f))
-      if (allowDelete) {
-        Button(onClick = onDelete) {
-          Icon(
-            imageVector = Icons.Filled.Delete,
-            contentDescription = stringResource(R.string.one_off_duration_delete),
-            modifier = BUTTON_MODIFIER,
-          )
-        }
+      Text(
+        text = stringResource(R.string.one_off_duration, index + 1, value.format()),
+        modifier = Modifier.weight(1f),
+      )
+      Button(
+        onClick = onDelete,
+        // Reserving space.
+        enabled = allowDelete,
+        modifier = Modifier.alpha(if (allowDelete) 1f else 0f),
+      ) {
+        Icon(
+          imageVector = Icons.Filled.Delete,
+          contentDescription = stringResource(R.string.one_off_duration_delete),
+          modifier = BUTTON_MODIFIER,
+        )
       }
     }
   }

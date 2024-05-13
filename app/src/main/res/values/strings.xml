@@ -5,7 +5,7 @@
     <string name="settings_title">Nudge</string>
     <string name="settings_one_off">One-off…</string>
     <string name="settings_one_off_running">%s / %s</string>
-    <string name="settings_one_off_paused">%s / %s (paused)</string>
+    <string name="settings_one_off_paused">%s</string>
     <string name="settings_periodic_title">Periodic</string>
     <string name="settings_periodic_start">Start</string>
     <string name="settings_periodic_stop">Stop</string>
@@ -26,6 +26,7 @@
     <string name="one_off_resume">Resume</string>
     <string name="one_off_stop">Stop</string>
     <string name="one_off_durations_title">When to nudge?</string>
+    <string name="one_off_duration">%d. %s</string>
     <string name="one_off_duration_delete">Delete</string>
     <string name="one_off_duration_add">Add</string>
     <string name="one_off_minimum_duration_toast">Duration cannot be lower than %d seconds.</string>
@@ -39,6 +40,7 @@
     <string name="vibration_style_111">1–1–1</string>
     <string name="vibration_style_212">2–1–2</string>
     <string name="vibration_style_123">1–2–3</string>
+    <string name="vibration_style_321">3–2–1</string>
 
     <!-- Notifications -->
     <string name="notifications_running_started">Nudge is running…</string>
