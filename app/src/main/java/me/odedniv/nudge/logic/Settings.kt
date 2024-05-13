@@ -25,14 +25,16 @@ data class Settings(
     val pausedAt: Duration?,
     val durations: List<Duration>,
   ) {
-    fun isEnabled(now: Instant): Boolean = nextElapsedIndex(now) != null
+    fun isEnabled(now: Instant): Boolean = elapsed(now) != null
 
     fun isRunning(now: Instant): Boolean = pausedAt == null && isEnabled(now)
 
-    fun elapsed(now: Instant): Duration {
-      startedAt!!
+    /** Returns the running time, or null if not running. */
+    fun elapsed(now: Instant): Duration? {
+      if (startedAt == null) return null
       if (pausedAt != null) return pausedAt
-      return Duration.between(startedAt, now)
+      val result = Duration.between(startedAt, now)
+      return if (result < total) result else null
     }
 
     val total: Duration by lazy { durations.sum() }
@@ -40,7 +42,7 @@ data class Settings(
     /** Returns the index of the next duration, or null if all durations elapsed. */
     fun nextElapsedIndex(now: Instant): Int? {
       startedAt ?: return null
-      val elapsed = elapsed(now)
+      val elapsed = elapsed(now) ?: return null
       var total = Duration.ZERO
       for ((index, duration) in durations.withIndex()) {
         total += duration

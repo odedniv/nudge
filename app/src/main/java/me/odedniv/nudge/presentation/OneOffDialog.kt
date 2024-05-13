@@ -58,7 +58,6 @@ private val BUTTON_MODIFIER =
 fun OneOffDialog(
   showDialog: Boolean,
   value: Settings.OneOff,
-  now: Instant,
   onUpdate: (Settings.OneOff) -> Unit,
   onDismiss: () -> Unit,
   scrollState: ScalingLazyListState,
@@ -70,7 +69,6 @@ fun OneOffDialog(
   ) {
     OneOffView(
       value = value,
-      now = now,
       onUpdate = onUpdate,
     )
   }
@@ -79,7 +77,6 @@ fun OneOffDialog(
 @Composable
 private fun OneOffView(
   value: Settings.OneOff,
-  now: Instant,
   onUpdate: (Settings.OneOff) -> Unit,
 ) {
   var showDurationDialog by remember { mutableStateOf(false) }
@@ -87,10 +84,14 @@ private fun OneOffView(
   val scrollState = rememberScalingLazyListState()
   val context = LocalContext.current
 
+  var now by remember { mutableStateOf(Instant.now()) }
+  OneOffTimer(value, now) { now = it }
+  val isEnabled = value.isEnabled(now)
+  val isRunning = value.isRunning(now)
   val nextElapsedIndex = value.nextElapsedIndex(now)
 
   ScalingLazyColumn {
-    if (nextElapsedIndex != null) {
+    if (isEnabled) {
       // pause/resume
       item {
         Row(
@@ -118,40 +119,37 @@ private fun OneOffView(
           )
         }
       }
-      // elapsed
-      item {
-        Text(
-          stringResource(
-            if (value.pausedAt == null) R.string.settings_one_off_running
-            else R.string.settings_one_off_paused,
-            value.elapsed(now).format(),
-            value.durations.sum().format()
-          ),
-          textAlign = TextAlign.Center,
-          modifier = CHIP_MODIFIER,
-        )
-      }
     } else if (value.durations.isNotEmpty()) {
       // start
       item { StartButton(onClick = { onUpdate(value.copy(startedAt = Instant.now())) }) }
     }
+    // elapsed
+    item {
+      Text(
+        stringResource(
+          if (isRunning) R.string.settings_one_off_running else R.string.settings_one_off_paused,
+          (value.elapsed(now) ?: Duration.ZERO).format(),
+          value.durations.sum().format()
+        ),
+        textAlign = TextAlign.Center,
+        modifier = CHIP_MODIFIER,
+      )
+    }
     // durations title
-    if (nextElapsedIndex == null) {
-      item {
-        Text(
-          text = stringResource(R.string.one_off_durations_title),
-          modifier = CHIP_MODIFIER,
-          textAlign = TextAlign.Center,
-        )
-      }
+    item {
+      Text(
+        text = stringResource(R.string.one_off_durations_title),
+        modifier = CHIP_MODIFIER,
+        textAlign = TextAlign.Center,
+      )
     }
     // durations
     for ((index, duration) in value.durations.withIndex()) {
       item {
         DurationChip(
           duration,
-          allowDelete = nextElapsedIndex == null,
-          past = nextElapsedIndex != null && index < nextElapsedIndex,
+          allowDelete = !isEnabled,
+          past = nextElapsedIndex?.let { index < it } ?: false,
           onDelete = {
             onUpdate(value.copy(durations = value.durations.filterIndexed { i, _ -> i != index }))
           },
@@ -159,7 +157,7 @@ private fun OneOffView(
       }
     }
     // add
-    if (nextElapsedIndex == null) {
+    if (!isEnabled) {
       item { AddButton(onClick = { showDurationDialog = true }) }
     }
   }
@@ -289,7 +287,6 @@ fun SettingsOneOffViewPreview() {
           durations =
             listOf(5.minutes, 10.minutes + 3.seconds, 10.minutes).map { it.toJavaDuration() },
         ),
-      now = Instant.EPOCH + 10.minutes.toJavaDuration(),
       onUpdate = {},
     )
   }

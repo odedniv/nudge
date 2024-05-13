@@ -29,7 +29,6 @@ import androidx.lifecycle.lifecycleScope
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.launch
-import me.odedniv.nudge.logic.NowViewModel
 import me.odedniv.nudge.logic.Settings
 
 class SettingsActivity : ComponentActivity() {
@@ -69,18 +68,9 @@ class SettingsActivity : ComponentActivity() {
       ObserveEventChange { event ->
         if (event == Lifecycle.Event.ON_RESUME) settings = Settings.commit(this)
       }
-      val nowViewModel: NowViewModel by viewModels()
-      val now: Instant by nowViewModel.value.collectAsState()
-
-      if (settings.oneOff.isRunning(now)) {
-        nowViewModel.start()
-      } else {
-        nowViewModel.stop()
-      }
 
       SettingsView(
         value = settings,
-        now = now,
         onUpdate = {
           if (it.requestPermissions()) return@SettingsView
           settings = it.apply { write() }

@@ -68,8 +68,8 @@ class Scheduler(private val context: Context) {
   }
 
   private fun Settings.nextOneOffTrigger(now: Instant): Instant? {
-    val oneOffNextElapsedIndex = oneOff.nextElapsedIndex(now) ?: return null
     if (oneOff.pausedAt != null) return Instant.MAX
+    val oneOffNextElapsedIndex = oneOff.nextElapsedIndex(now) ?: return null
     return oneOff.startedAt!! + oneOff.durations.take(oneOffNextElapsedIndex + 1).sum()
   }
 

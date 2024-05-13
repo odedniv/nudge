@@ -42,7 +42,6 @@ private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 @Composable
 fun SettingsView(
   value: Settings,
-  now: Instant,
   onUpdate: (Settings) -> Unit,
   onVibrationUpdate: (Vibration) -> Unit,
 ) {
@@ -66,7 +65,6 @@ fun SettingsView(
       item {
         OneOffChip(
           value = value.oneOff,
-          now = now,
           onClick = { showOneOffDialog = true },
         )
       }
@@ -76,7 +74,7 @@ fun SettingsView(
       item {
         PeriodicChip(
           value = value.periodic,
-          enabled = !value.oneOff.isEnabled(now),
+          oneOff = value.oneOff,
           onUpdate = { onUpdate(value.copy(periodic = it)) },
         )
       }
@@ -123,7 +121,6 @@ fun SettingsView(
     OneOffDialog(
       showDialog = showOneOffDialog,
       value = value.oneOff,
-      now = now,
       onUpdate = { onUpdate(value.copy(oneOff = it)) },
       onDismiss = { showOneOffDialog = false },
       scrollState = scrollState,
@@ -200,11 +197,10 @@ private fun TitleText(resourceId: Int) {
 }
 
 @Composable
-private fun OneOffChip(value: Settings.OneOff, now: Instant, onClick: () -> Unit) {
-  val elapsed =
-    (if (value.startedAt != null) value.elapsed(now) else null)?.let {
-      if (it < value.total) it else null
-    }
+private fun OneOffChip(value: Settings.OneOff, onClick: () -> Unit) {
+  var now by remember { mutableStateOf(Instant.now()) }
+  OneOffTimer(value, now) { now = it }
+  val elapsed = value.elapsed(now)
 
   Chip(
     onClick = onClick,
@@ -224,11 +220,15 @@ private fun OneOffChip(value: Settings.OneOff, now: Instant, onClick: () -> Unit
 }
 
 @Composable
-private fun PeriodicChip(value: Boolean, enabled: Boolean, onUpdate: (Boolean) -> Unit) {
+private fun PeriodicChip(value: Boolean, oneOff: Settings.OneOff, onUpdate: (Boolean) -> Unit) {
+  var now by remember { mutableStateOf(Instant.now()) }
+  OneOffTimer(oneOff, now) { now = it }
+  val oneOffIsEnabled = oneOff.isEnabled(now)
+
   ToggleChip(
     checked = value,
     onCheckedChange = onUpdate,
-    enabled = enabled,
+    enabled = !oneOffIsEnabled,
     label = {
       Text(
         if (!value) stringResource(R.string.settings_periodic_start)
@@ -336,7 +336,6 @@ fun SettingsViewPreview() {
   NudgeTheme {
     SettingsView(
       value = Settings.DEFAULT,
-      now = Instant.EPOCH,
       onUpdate = {},
       onVibrationUpdate = {},
     )
