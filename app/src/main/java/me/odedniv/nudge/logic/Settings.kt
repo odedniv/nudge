@@ -3,6 +3,8 @@ package me.odedniv.nudge.logic
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.icu.util.Calendar
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
@@ -18,6 +20,7 @@ data class Settings(
   val runningNotification: Boolean,
   val frequency: Duration,
   val hours: Hours,
+  val days: Set<DayOfWeek>,
   val vibration: Vibration,
 ) {
   data class OneOff(
@@ -63,6 +66,7 @@ data class Settings(
       putLong(KEY_FREQUENCY_SECONDS, frequency.seconds)
       putLong(KEY_HOURS_START_SECONDS, hours.start.toSecondOfDay().toLong())
       putLong(KEY_HOURS_END_SECONDS, hours.end.toSecondOfDay().toLong())
+      putStringSet(KEY_DAYS, days.map { it.name }.toSet())
       putString(KEY_VIBRATION_STYLE_NAME, vibration.styleName)
       putFloat(KEY_VIBRATION_DURATION_MULTIPLIER, vibration.durationMultiplier)
       apply()
@@ -88,6 +92,7 @@ data class Settings(
     private const val KEY_FREQUENCY_SECONDS = "frequency_seconds"
     private const val KEY_HOURS_START_SECONDS = "hours_start_seconds"
     private const val KEY_HOURS_END_SECONDS = "hours_end_seconds"
+    private const val KEY_DAYS = "days"
     private const val KEY_VIBRATION_STYLE_NAME = "vibration_style_name"
     private const val KEY_VIBRATION_DURATION_MULTIPLIER = "vibration_duration_multiplier"
 
@@ -98,6 +103,11 @@ data class Settings(
       if (DEBUG) 10.seconds.toJavaDuration() else 1.hours.toJavaDuration()
     private val DEFAULT_HOURS =
       Hours(LocalTime.of(if (DEBUG) 0 else 10, 0), LocalTime.of(if (DEBUG) 23 else 20, 0))
+    private val DEFAULT_FIRST_DAY_OF_WEEK: DayOfWeek =
+      Calendar.getInstance().firstDayOfWeek.calendarToJavaDayOfWeek()
+    private val DEFAULT_DAYS: Set<DayOfWeek> =
+      (0L..4L).map { DEFAULT_FIRST_DAY_OF_WEEK + it }.toSet()
+    private val DEFAULT_DAYS_NAMES: Set<String> = DEFAULT_DAYS.map { it.name }.toSet()
     @SuppressLint("StaticFieldLeak") // context is null
     private val DEFAULT_VIBRATION = Vibration.DEFAULT
 
@@ -111,6 +121,7 @@ data class Settings(
         frequency = DEFAULT_FREQUENCY,
         vibration = DEFAULT_VIBRATION,
         hours = DEFAULT_HOURS,
+        days = DEFAULT_DAYS,
       )
 
     val MINIMUM_FREQUENCY: Duration = if (!DEBUG) 10.minutes.toJavaDuration() else Duration.ZERO
@@ -143,6 +154,8 @@ data class Settings(
                   getLong(KEY_HOURS_END_SECONDS, DEFAULT_HOURS.end.toSecondOfDay().toLong())
                 ),
             ),
+          days = getStringSet(KEY_DAYS, DEFAULT_DAYS_NAMES)?.map { DayOfWeek.valueOf(it) }?.toSet()
+              ?: DEFAULT_DAYS,
           vibration =
             Vibration(
               context = context,

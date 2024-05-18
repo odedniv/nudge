@@ -16,6 +16,17 @@
     <string name="settings_hours">Active hours</string>
     <string name="settings_hours_must_be_before">Must be before %s</string>
     <string name="settings_hours_must_be_after">Must be after %s</string>
+    <string name="settings_days">Active days</string>
+    <string-array name="settings_days_names">
+        <!-- Order of DayOfWeek.value. -->
+        <item>M</item>
+        <item>T</item>
+        <item>W</item>
+        <item>T</item>
+        <item>F</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
     <string name="settings_common_title">Other settings</string>
     <string name="settings_vibration">Vibration…</string>
     <string name="settings_vibration_description">%s for %.2f seconds</string>
@@ -30,6 +41,18 @@
     <string name="one_off_duration_delete">Delete</string>
     <string name="one_off_duration_add">Add</string>
     <string name="one_off_minimum_duration_toast">Duration cannot be lower than %d seconds.</string>
+
+    <!-- DaysDialog -->
+    <string-array name="days_names">
+        <!-- Order of DayOfWeek.value. -->
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
 
     <!-- VibrationDialog -->
     <string name="vibration_title">How to nudge?</string>

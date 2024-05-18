@@ -8,10 +8,14 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.content.getSystemService
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
+import kotlin.time.Duration.Companion.days
+import kotlin.time.toJavaDuration
 import me.odedniv.nudge.presentation.SettingsActivity
 import me.odedniv.nudge.services.NudgeReceiver
 
@@ -61,8 +65,7 @@ class Scheduler(private val context: Context) {
 
   private fun Settings.nextTrigger(): Instant? {
     val now = Instant.now()
-    val zone = ZoneId.systemDefault()
-    return (nextOneOffTrigger(now) ?: nextPeriodicTrigger(now, zone))?.let {
+    return (nextOneOffTrigger(now) ?: nextPeriodicTrigger(now))?.let {
       if (it < Instant.MAX) it else null
     }
   }
@@ -73,20 +76,24 @@ class Scheduler(private val context: Context) {
     return oneOff.startedAt!! + oneOff.durations.take(oneOffNextElapsedIndex + 1).sum()
   }
 
-  private fun Settings.nextPeriodicTrigger(now: Instant, zone: ZoneId): Instant? {
-    if (!periodic) return null
-    val value = (now + frequency) - Duration.ofMillis(now.toEpochMilli() % frequency.toMillis())
-    val localTime = value.atZone(zone).toLocalTime()
-    if (localTime !in hours) return value.absPlus(hours.start, zone)
-    return value
-  }
+  private fun Settings.nextPeriodicTrigger(now: Instant): Instant? =
+    if (!periodic) null
+    else now.plusRounded(frequency).atZone(ZoneId.systemDefault()).at(hours, days).toInstant()
 
-  private fun Instant.absPlus(value: LocalTime, zone: ZoneId): Instant {
-    val localTime = atZone(zone).toLocalTime()
-    val duration =
-      Duration.between(localTime, value).let { if (it.isNegative) it.plusDays(1) else it }
-    return this + duration
-  }
+  private fun Instant.plusRounded(duration: Duration): Instant =
+    (this + duration) - Duration.ofMillis(toEpochMilli() % duration.toMillis())
+
+  private fun ZonedDateTime.at(hours: Hours, days: Set<DayOfWeek>): ZonedDateTime =
+    if (toLocalTime() in hours && dayOfWeek in days) this else at(hours.start).at(days)
+
+  private fun ZonedDateTime.at(value: LocalTime): ZonedDateTime =
+    with(value).let { if (it >= this) it else it + 1.days.toJavaDuration() }
+
+  private fun ZonedDateTime.at(days: Set<DayOfWeek>): ZonedDateTime =
+    if (dayOfWeek in days) this else days.minOf { at(it) }
+
+  private fun ZonedDateTime.at(day: DayOfWeek): ZonedDateTime =
+    with(day).let { if (it >= this) it else it + 7.days.toJavaDuration() }
 
   companion object {
     private const val TAG = "Scheduler"

@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import androidx.wear.tooling.preview.devices.WearDevices
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
@@ -34,10 +36,9 @@ import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
+import me.odedniv.nudge.logic.allDays
 import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.presentation.theme.NudgeTheme
-
-private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
 
 @Composable
 fun SettingsView(
@@ -50,6 +51,7 @@ fun SettingsView(
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showHoursStartDialog by remember { mutableStateOf(false) }
     var showHoursEndDialog by remember { mutableStateOf(false) }
+    var showDaysDialog by remember { mutableStateOf(false) }
     var showVibrationDialog by remember { mutableStateOf(false) }
 
     val scrollState = rememberScalingLazyListState()
@@ -93,18 +95,20 @@ fun SettingsView(
         )
       }
       // hours
-      item {
-        Text(
-          text = stringResource(R.string.settings_hours),
-          modifier = CHIP_MODIFIER,
-          textAlign = TextAlign.Center,
-        )
-      }
+      item { SubtitleText(R.string.settings_hours) }
       item {
         HoursChip(
           value = value.hours,
           onClickStart = { showHoursStartDialog = true },
           onClickEnd = { showHoursEndDialog = true },
+        )
+      }
+      // days
+      item { SubtitleText(R.string.settings_days) }
+      item {
+        DaysChip(
+          value = value.days,
+          onClick = { showDaysDialog = true },
         )
       }
       // common title
@@ -173,6 +177,14 @@ fun SettingsView(
       onDismiss = { showHoursEndDialog = false },
       scrollState = scrollState,
     )
+    // days dialog
+    DaysDialog(
+      showDialog = showDaysDialog,
+      value = value.days,
+      onUpdate = { onUpdate(value.copy(days = it)) },
+      onDismiss = { showDaysDialog = false },
+      scrollState = scrollState,
+    )
     // vibration dialog
     VibrationDialog(
       showDialog = showVibrationDialog,
@@ -188,26 +200,17 @@ fun SettingsView(
 }
 
 @Composable
-private fun TitleText(resourceId: Int) {
-  Text(
-    text = stringResource(resourceId),
-    modifier = CHIP_MODIFIER,
-    textAlign = TextAlign.Center,
-  )
-}
-
-@Composable
 private fun OneOffChip(value: Settings.OneOff, onClick: () -> Unit) {
   var now by remember { mutableStateOf(Instant.now()) }
   OneOffTimer(value, now) { now = it }
+  val isRunning = value.isRunning(now)
   val elapsed = value.elapsed(now)
 
   Chip(
     onClick = onClick,
     label = { Text(stringResource(R.string.settings_one_off)) },
     colors =
-      if (elapsed == null || value.pausedAt == null) ChipDefaults.primaryChipColors()
-      else ChipDefaults.secondaryChipColors(), // paused
+      if (isRunning) ChipDefaults.primaryChipColors() else ChipDefaults.secondaryChipColors(),
     secondaryLabel = {
       if (elapsed != null) {
         Text(
@@ -280,6 +283,23 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
       label = { Text(value.end.toString()) },
     )
   }
+}
+
+@Composable
+private fun DaysChip(value: Set<DayOfWeek>, onClick: () -> Unit) {
+  Chip(
+    onClick = onClick,
+    label = { Text(stringResource(R.string.settings_days)) },
+    secondaryLabel = {
+      Text(
+        allDays()
+          .filter { it in value }
+          .map { stringArrayResource(R.array.settings_days_names)[it.value - 1] }
+          .joinToString(", ")
+      )
+    },
+    modifier = CHIP_MODIFIER,
+  )
 }
 
 @Composable

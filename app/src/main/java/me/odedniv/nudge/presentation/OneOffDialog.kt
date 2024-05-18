@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -27,12 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Icon
@@ -50,10 +45,6 @@ import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.logic.sum
 import me.odedniv.nudge.presentation.theme.NudgeTheme
-
-private val CHIP_MODIFIER = Modifier.fillMaxWidth().padding(4.dp)
-private val BUTTON_MODIFIER =
-  Modifier.size(ButtonDefaults.DefaultIconSize).wrapContentSize(align = Alignment.Center)
 
 @Composable
 fun OneOffDialog(
@@ -88,7 +79,6 @@ private fun OneOffView(
   var now by remember { mutableStateOf(Instant.now()) }
   OneOffTimer(value, now) { now = it }
   val isEnabled = value.isEnabled(now)
-  val isRunning = value.isRunning(now)
   val nextElapsedIndex = value.nextElapsedIndex(now)
   val elapsed = value.elapsed(now)
 
@@ -142,13 +132,7 @@ private fun OneOffView(
       )
     }
     // durations title
-    item {
-      Text(
-        text = stringResource(R.string.one_off_durations_title),
-        modifier = CHIP_MODIFIER,
-        textAlign = TextAlign.Center,
-      )
-    }
+    item { SubtitleText(R.string.one_off_durations_title) }
     // durations
     for ((index, duration) in value.durations.withIndex()) {
       item {

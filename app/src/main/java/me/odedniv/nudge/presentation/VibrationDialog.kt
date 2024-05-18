@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -53,21 +52,9 @@ private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
       verticalArrangement = Arrangement.Center,
     ) {
       // Title
-      item {
-        Text(
-          text = stringResource(R.string.vibration_title),
-          modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-          textAlign = TextAlign.Center,
-        )
-      }
+      item { TitleText(R.string.vibration_title) }
       // duration
-      item {
-        Text(
-          text = stringResource(R.string.vibration_duration),
-          modifier = Modifier.fillMaxWidth().padding(4.dp),
-          textAlign = TextAlign.Center,
-        )
-      }
+      item { SubtitleText(R.string.vibration_duration) }
       item {
         PercentSlider(
           value = value.durationMultiplier,

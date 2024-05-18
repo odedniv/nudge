@@ -1,5 +1,7 @@
 package me.odedniv.nudge.logic
 
+import android.icu.util.Calendar
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
 
@@ -21,3 +23,22 @@ val Duration.minutesPart: Int
 
 val Duration.secondsPart: Int
   get() = (seconds % 60).toInt()
+
+/**
+ * Converts [Calendar.SUNDAY] (1) .. [Calendar.SATURDAY] (7) to [DayOfWeek.MONDAY] (1) to
+ * [DayOfWeek.SUNDAY] (7).
+ */
+fun Int.calendarToJavaDayOfWeek(): DayOfWeek =
+  if (this == Calendar.SUNDAY) {
+    DayOfWeek.SUNDAY
+  } else {
+    DayOfWeek.of(this - 1)
+  }
+
+infix fun <T> Set<T>.xor(element: T): Set<T> =
+  if (element in this) this - element else this + element
+
+fun allDays(): List<DayOfWeek> {
+  val firstDayOfWeek: DayOfWeek = Calendar.getInstance().firstDayOfWeek.calendarToJavaDayOfWeek()
+  return (0L..6L).map { firstDayOfWeek + it }
+}
