@@ -139,9 +139,9 @@ data class Settings(
               startedAt = Instant.ofEpochSecond(getLong(KEY_ONE_OFF_STARTED_AT, 0L)).orNull(),
               pausedAt = Duration.ofSeconds(getLong(KEY_ONE_OFF_PAUSED_AT, 0L)).orNull(),
               durations =
-                getString(KEY_ONE_OFF_DURATIONS, null)?.run {
-                  split(",").mapNotNull { Duration.ofSeconds(it.toLong()) }
-                }
+                getString(KEY_ONE_OFF_DURATIONS, null)
+                  ?.takeIf { it.isNotEmpty() }
+                  ?.run { split(",").mapNotNull { Duration.ofSeconds(it.toLong()) } }
                   ?: DEFAULT_ONE_OFF.durations,
             ),
           periodic = getBoolean(KEY_PERIODIC, DEFAULT_PERIODIC),
@@ -163,7 +163,10 @@ data class Settings(
           vibration =
             Vibration(
               context = context,
-              pattern = getString(KEY_VIBRATION_PATTERN, null)?.asVibrationPattern()
+              pattern =
+                getString(KEY_VIBRATION_PATTERN, null)
+                  ?.takeIf { it.isNotEmpty() }
+                  ?.asVibrationPattern()
                   ?: Vibration.DEFAULT.pattern,
               multiplier = getFloat(KEY_VIBRATION_MULTIPLIER, DEFAULT_VIBRATION.multiplier),
             ),

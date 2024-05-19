@@ -83,7 +83,7 @@ private fun OneOffView(
   val nextElapsedIndex = value.nextElapsedIndex(now)
   val elapsed = value.elapsed(now)
 
-  ScalingLazyColumn {
+  ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
     if (isEnabled) {
       // pause/resume
       item {

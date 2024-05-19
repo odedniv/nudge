@@ -50,7 +50,7 @@ fun VibrationDialog(
 @Composable
 private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
   NudgeTheme {
-    ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
+    ScalingLazyColumn {
       // multiplier
       item { SubtitleText(R.string.vibration_multiplier) }
       item {
