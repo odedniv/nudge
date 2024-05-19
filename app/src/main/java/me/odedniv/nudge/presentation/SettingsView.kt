@@ -4,9 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,10 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
@@ -57,12 +54,7 @@ fun SettingsView(
     val scrollState = rememberScalingLazyListState()
     val context = LocalContext.current
 
-    ScalingLazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-    ) {
-      // title
-      item { TitleText(R.string.settings_title) }
+    ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
       // one-off
       item {
         OneOffChip(
@@ -218,7 +210,7 @@ private fun OneOffChip(value: Settings.OneOff, onClick: () -> Unit) {
         )
       }
     },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth()
   )
 }
 
@@ -239,7 +231,7 @@ private fun PeriodicChip(value: Boolean, oneOff: Settings.OneOff, onUpdate: (Boo
       )
     },
     toggleControl = { Switch(checked = value) },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -250,7 +242,7 @@ private fun RunningNotificationChip(value: Boolean, onUpdate: (Boolean) -> Unit)
     onCheckedChange = onUpdate,
     label = { Text(stringResource(R.string.settings_running_notification)) },
     toggleControl = { Switch(checked = value) },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -262,7 +254,7 @@ private fun FrequencyChip(value: Duration, onClick: () -> Unit) {
     secondaryLabel = {
       Text(stringResource(R.string.settings_frequency_description, value.toMinutes()))
     },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -271,7 +263,7 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
   Row(
     horizontalArrangement = Arrangement.SpaceEvenly,
     verticalAlignment = Alignment.CenterVertically,
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   ) {
     Chip(
       onClick = onClickStart,
@@ -298,7 +290,7 @@ private fun DaysChip(value: Set<DayOfWeek>, onClick: () -> Unit) {
           .joinToString(", ")
       )
     },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -316,7 +308,7 @@ private fun VibrationChip(value: Vibration, onClick: () -> Unit) {
         )
       )
     },
-    modifier = CHIP_MODIFIER,
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 

@@ -9,6 +9,7 @@ import java.time.Duration
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import me.odedniv.nudge.R
 
@@ -28,8 +29,13 @@ data class Vibration(
   suspend fun execute() {
     val vibrator: Vibrator = requireNotNull(context!!.getSystemService())
     vibrator.cancel()
-    vibrator.vibrate(vibrationEffect)
-    delay(totalDuration.toMillis())
+    try {
+      vibrator.vibrate(vibrationEffect)
+      delay(totalDuration.toMillis())
+    } catch (e: CancellationException) {
+      vibrator.cancel()
+      throw e
+    }
   }
 
   val pattern: VibrationEffectPattern by lazy {

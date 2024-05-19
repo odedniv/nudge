@@ -1,7 +1,5 @@
 package me.odedniv.nudge.presentation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -9,7 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.InlineSlider
@@ -47,14 +47,7 @@ fun VibrationDialog(
 @Composable
 private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
   NudgeTheme {
-    ScalingLazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-    ) {
-      // Title
-      item { TitleText(R.string.vibration_title) }
-      // duration
-      item { SubtitleText(R.string.vibration_duration) }
+    ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
       item {
         PercentSlider(
           value = value.durationMultiplier,
@@ -75,7 +68,7 @@ private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
             },
             label = { Text(stringResource(styleResource)) },
             toggleControl = { RadioButton(selected = styleName == value.styleName) },
-            modifier = Modifier.fillMaxWidth().padding(4.dp),
+            modifier = Modifier.fillMaxWidth(),
           )
         }
       }
@@ -97,7 +90,7 @@ private fun PercentSlider(
     valueProgression = valueProgression,
     decreaseIcon = { Icon(InlineSliderDefaults.Decrease, decreaseContentDescription) },
     increaseIcon = { Icon(InlineSliderDefaults.Increase, increaseContentDescription) },
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp).padding(bottom = 12.dp),
+    modifier = Modifier.padding(bottom = 8.dp),
   )
 }
 

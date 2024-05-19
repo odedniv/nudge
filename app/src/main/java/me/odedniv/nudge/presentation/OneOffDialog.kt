@@ -59,8 +59,11 @@ fun OneOffDialog(
     onDismissRequest = onDismiss,
     scrollState = scrollState,
   ) {
+    var now by remember { mutableStateOf(Instant.now()) }
+    OneOffTimer(value, now) { now = it }
     OneOffView(
       value = value,
+      now = now,
       onUpdate = onUpdate,
     )
   }
@@ -69,6 +72,7 @@ fun OneOffDialog(
 @Composable
 private fun OneOffView(
   value: Settings.OneOff,
+  now: Instant,
   onUpdate: (Settings.OneOff) -> Unit,
 ) {
   var showDurationDialog by remember { mutableStateOf(false) }
@@ -76,8 +80,6 @@ private fun OneOffView(
   val scrollState = rememberScalingLazyListState()
   val context = LocalContext.current
 
-  var now by remember { mutableStateOf(Instant.now()) }
-  OneOffTimer(value, now) { now = it }
   val isEnabled = value.isEnabled(now)
   val nextElapsedIndex = value.nextElapsedIndex(now)
   val elapsed = value.elapsed(now)
@@ -87,8 +89,8 @@ private fun OneOffView(
       // pause/resume
       item {
         Row(
-          horizontalArrangement = Arrangement.SpaceEvenly,
-          modifier = CHIP_MODIFIER,
+          horizontalArrangement = Arrangement.Absolute.SpaceEvenly,
+          modifier = Modifier.fillMaxWidth(),
         ) {
           if (value.pausedAt == null) {
             // pause
@@ -128,11 +130,8 @@ private fun OneOffView(
           stringResource(R.string.settings_one_off_paused, value.total.format())
         },
         textAlign = TextAlign.Center,
-        modifier = CHIP_MODIFIER,
       )
     }
-    // durations title
-    item { SubtitleText(R.string.one_off_durations_title) }
     // durations
     for ((index, duration) in value.durations.withIndex()) {
       item {
@@ -199,7 +198,6 @@ private fun DurationChip(
         Icon(
           imageVector = Icons.Filled.Delete,
           contentDescription = stringResource(R.string.one_off_duration_delete),
-          modifier = BUTTON_MODIFIER,
         )
       }
     }
@@ -212,7 +210,6 @@ private fun AddButton(onClick: () -> Unit) {
     Icon(
       imageVector = Icons.Filled.Add,
       contentDescription = stringResource(R.string.one_off_duration_add),
-      modifier = BUTTON_MODIFIER,
     )
   }
 }
@@ -223,7 +220,6 @@ private fun PauseButton(onClick: () -> Unit) {
     Icon(
       imageVector = Icons.Filled.Pause,
       contentDescription = stringResource(R.string.one_off_pause),
-      modifier = BUTTON_MODIFIER,
     )
   }
 }
@@ -234,7 +230,6 @@ private fun ResumeButton(onClick: () -> Unit) {
     Icon(
       imageVector = Icons.Filled.PlayArrow,
       contentDescription = stringResource(R.string.one_off_resume),
-      modifier = BUTTON_MODIFIER,
     )
   }
 }
@@ -245,7 +240,6 @@ private fun StopButton(onClick: () -> Unit) {
     Icon(
       imageVector = Icons.Filled.Stop,
       contentDescription = stringResource(R.string.one_off_stop),
-      modifier = BUTTON_MODIFIER,
     )
   }
 }
@@ -256,7 +250,6 @@ private fun StartButton(onClick: () -> Unit) {
     Icon(
       imageVector = Icons.Filled.PlayArrow,
       contentDescription = stringResource(R.string.one_off_start),
-      modifier = BUTTON_MODIFIER,
     )
   }
 }
@@ -285,6 +278,7 @@ fun SettingsOneOffViewPreview() {
           durations =
             listOf(5.minutes, 10.minutes + 3.seconds, 10.minutes).map { it.toJavaDuration() },
         ),
+      now = Instant.EPOCH + 7.minutes.toJavaDuration(),
       onUpdate = {},
     )
   }

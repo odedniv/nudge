@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
@@ -43,8 +45,7 @@ private fun DaysView(
   value: Set<DayOfWeek>,
   onUpdate: (Set<DayOfWeek>) -> Unit,
 ) {
-  ScalingLazyColumn {
-    item { SubtitleText(R.string.settings_days) }
+  ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
     for (day in allDays()) {
       item {
         Chip(

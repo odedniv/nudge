@@ -25,8 +25,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Settings
+import me.odedniv.nudge.logic.Vibration
 
 class SettingsActivity : ComponentActivity() {
   private val alarmManager: AlarmManager by lazy { requireNotNull(getSystemService()) }
@@ -59,6 +65,25 @@ class SettingsActivity : ComponentActivity() {
       }
 
     val initialSettings = Settings.commit(this)
+    val vibrationExecutor =
+      MutableSharedFlow<Vibration>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+      )
+    var vibrationExecutionJob: Job? = null
+
+    lifecycleScope.launch {
+      vibrationExecutor.collect {
+        if (vibrationExecutionJob?.isActive == true) {
+          vibrationExecutionJob?.cancel()
+          delay(200.milliseconds) // Don't vibrate too close together.
+        }
+        vibrationExecutionJob = launch {
+          it.execute()
+          delay(200.milliseconds) // Don't vibrate too close together.
+        }
+      }
+    }
 
     setContent {
       var settings by remember { mutableStateOf(initialSettings) }
@@ -72,7 +97,7 @@ class SettingsActivity : ComponentActivity() {
           if (it.requestPermissions()) return@SettingsView
           settings = it.apply { write() }
         },
-        onVibrationUpdate = { lifecycleScope.launch { it.execute() } },
+        onVibrationUpdate = { vibrationExecutor.tryEmit(it) },
       )
     }
   }

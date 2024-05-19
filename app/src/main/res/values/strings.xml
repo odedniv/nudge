@@ -2,9 +2,8 @@
     <string name="app_name">Nudge</string>
 
     <!-- SettingsActivity -->
-    <string name="settings_title">Nudge</string>
     <string name="settings_one_off">One-off…</string>
-    <string name="settings_one_off_running">%s / %s</string>
+    <string name="settings_one_off_running">%1$s / %2$s</string>
     <string name="settings_one_off_paused">%s</string>
     <string name="settings_periodic_title">Periodic</string>
     <string name="settings_periodic_start">Start</string>
@@ -12,7 +11,7 @@
     <string name="settings_running_notification">Notification</string>
     <string name="settings_frequency">Frequency…</string>
     <string name="settings_frequency_description">Every %d minutes</string>
-    <string name="settings_frequency_minimum_toast">Frequency cannot be lower than %d minutes.</string>
+    <string name="settings_frequency_minimum_toast">Can\'t be lower than %d minutes.</string>
     <string name="settings_hours">Active hours</string>
     <string name="settings_hours_must_be_before">Must be before %s</string>
     <string name="settings_hours_must_be_after">Must be after %s</string>
@@ -29,18 +28,17 @@
     </string-array>
     <string name="settings_common_title">Other settings</string>
     <string name="settings_vibration">Vibration…</string>
-    <string name="settings_vibration_description">%s for %.2f seconds</string>
+    <string name="settings_vibration_description">%1$s for %2$.2f seconds</string>
 
     <!-- SettingsOneOffDialog -->
     <string name="one_off_start">Start</string>
     <string name="one_off_pause">Pause</string>
     <string name="one_off_resume">Resume</string>
     <string name="one_off_stop">Stop</string>
-    <string name="one_off_durations_title">When to nudge?</string>
-    <string name="one_off_duration">%d. %s</string>
+    <string name="one_off_duration">%1$d. %2$s</string>
     <string name="one_off_duration_delete">Delete</string>
     <string name="one_off_duration_add">Add</string>
-    <string name="one_off_minimum_duration_toast">Duration cannot be lower than %d seconds.</string>
+    <string name="one_off_minimum_duration_toast">Can\'t be lower than %d seconds.</string>
 
     <!-- DaysDialog -->
     <string-array name="days_names">
@@ -55,8 +53,6 @@
     </string-array>
 
     <!-- VibrationDialog -->
-    <string name="vibration_title">How to nudge?</string>
-    <string name="vibration_duration">Duration</string>
     <string name="vibration_duration_decrease">Decrease duration</string>
     <string name="vibration_duration_increase">Increase duration</string>
     <string name="vibration_style_solid">Solid</string>
