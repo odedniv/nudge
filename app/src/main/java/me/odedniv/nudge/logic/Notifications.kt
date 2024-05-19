@@ -45,7 +45,7 @@ class Notifications(private val context: Context) {
       )
       .apply {
         group = NUDGE_CHANNEL_GROUP_ID
-        vibrationPattern = settings.vibration.pattern
+        vibrationPattern = settings.vibration.timings.map { it.toMillis() }.toLongArray()
         setBypassDnd(true)
       }
       .also { notificationManager.createNotificationChannel(it) }

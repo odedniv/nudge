@@ -41,7 +41,6 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Settings
-import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.logic.sum
 import me.odedniv.nudge.presentation.theme.NudgeTheme
@@ -158,7 +157,7 @@ private fun OneOffView(
     showSeconds = true,
     value = value.durations.lastOrNull() ?: Settings.DEFAULT.frequency,
     onConfirm = {
-      if (it < Vibration.MAXIMUM_DURATION) {
+      if (it < Settings.OneOff.MINIMUM_DURATION) {
         toastMinimumDuration(context)
         return@DurationDialog
       }
@@ -197,7 +196,7 @@ private fun DurationChip(
       ) {
         Icon(
           imageVector = Icons.Filled.Delete,
-          contentDescription = stringResource(R.string.one_off_duration_delete),
+          contentDescription = stringResource(R.string.one_off_duration_delete, index + 1),
         )
       }
     }
@@ -259,7 +258,7 @@ private fun toastMinimumDuration(context: Context) {
       context,
       context.getString(
         R.string.one_off_minimum_duration_toast,
-        Vibration.MAXIMUM_DURATION.seconds
+        Settings.OneOff.MINIMUM_DURATION.seconds,
       ),
       Toast.LENGTH_SHORT
     )

@@ -4,8 +4,15 @@ import android.icu.util.Calendar
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
+import kotlin.math.roundToLong
 
 fun Iterable<Duration>.sum(): Duration = fold(Duration.ZERO, Duration::plus)
+
+operator fun Duration.times(multiplier: Int): Duration =
+  multipliedBy(multiplier.toLong())
+
+operator fun Duration.times(multiplier: Float): Duration =
+  Duration.ofNanos((toNanos() * multiplier).roundToLong())
 
 fun Duration.format(): String =
   toHours().toString() +

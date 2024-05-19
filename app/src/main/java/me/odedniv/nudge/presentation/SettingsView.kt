@@ -29,11 +29,13 @@ import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
+import kotlin.math.roundToInt
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Hours
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.logic.allDays
+import me.odedniv.nudge.logic.asString
 import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.presentation.theme.NudgeTheme
 
@@ -303,8 +305,8 @@ private fun VibrationChip(value: Vibration, onClick: () -> Unit) {
       Text(
         stringResource(
           R.string.settings_vibration_description,
-          stringResource(value.styleResourceId),
-          value.activeDuration.toMillis() / 1000.0,
+          value.pattern.asString(),
+          (value.multiplier * 100).roundToInt(),
         )
       )
     },

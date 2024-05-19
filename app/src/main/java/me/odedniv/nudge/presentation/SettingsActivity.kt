@@ -76,11 +76,11 @@ class SettingsActivity : ComponentActivity() {
       vibrationExecutor.collect {
         if (vibrationExecutionJob?.isActive == true) {
           vibrationExecutionJob?.cancel()
-          delay(200.milliseconds) // Don't vibrate too close together.
+          delay(300.milliseconds) // Don't vibrate too close together.
         }
         vibrationExecutionJob = launch {
           it.execute()
-          delay(200.milliseconds) // Don't vibrate too close together.
+          delay(300.milliseconds) // Don't vibrate too close together.
         }
       }
     }

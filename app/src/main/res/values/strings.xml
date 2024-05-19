@@ -28,7 +28,7 @@
     </string-array>
     <string name="settings_common_title">Other settings</string>
     <string name="settings_vibration">Vibration…</string>
-    <string name="settings_vibration_description">%1$s for %2$.2f seconds</string>
+    <string name="settings_vibration_description">%1$s at %2$d%%</string>
 
     <!-- SettingsOneOffDialog -->
     <string name="one_off_start">Start</string>
@@ -36,8 +36,8 @@
     <string name="one_off_resume">Resume</string>
     <string name="one_off_stop">Stop</string>
     <string name="one_off_duration">%1$d. %2$s</string>
-    <string name="one_off_duration_delete">Delete</string>
-    <string name="one_off_duration_add">Add</string>
+    <string name="one_off_duration_delete">Delete duration %d</string>
+    <string name="one_off_duration_add">Add duration</string>
     <string name="one_off_minimum_duration_toast">Can\'t be lower than %d seconds.</string>
 
     <!-- DaysDialog -->
@@ -53,13 +53,10 @@
     </string-array>
 
     <!-- VibrationDialog -->
-    <string name="vibration_duration_decrease">Decrease duration</string>
-    <string name="vibration_duration_increase">Increase duration</string>
-    <string name="vibration_style_solid">Solid</string>
-    <string name="vibration_style_111">1–1–1</string>
-    <string name="vibration_style_212">2–1–2</string>
-    <string name="vibration_style_123">1–2–3</string>
-    <string name="vibration_style_321">3–2–1</string>
+    <string name="vibration_multiplier">Multiplier</string>
+    <string name="vibration_pattern">Pattern</string>
+    <string name="vibration_pattern_add">Add pattern</string>
+    <string name="vibration_pattern_remove">Remove pattern</string>
 
     <!-- Notifications -->
     <string name="notifications_running_started">Nudge is running…</string>

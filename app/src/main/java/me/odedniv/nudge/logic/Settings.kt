@@ -53,6 +53,10 @@ data class Settings(
       }
       return null
     }
+
+    companion object {
+      val MINIMUM_DURATION: Duration = 5.seconds.toJavaDuration()
+    }
   }
 
   fun write() {
@@ -67,8 +71,8 @@ data class Settings(
       putLong(KEY_HOURS_START_SECONDS, hours.start.toSecondOfDay().toLong())
       putLong(KEY_HOURS_END_SECONDS, hours.end.toSecondOfDay().toLong())
       putStringSet(KEY_DAYS, days.map { it.name }.toSet())
-      putString(KEY_VIBRATION_STYLE_NAME, vibration.styleName)
-      putFloat(KEY_VIBRATION_DURATION_MULTIPLIER, vibration.durationMultiplier)
+      putString(KEY_VIBRATION_PATTERN, vibration.pattern.joinToString("-"))
+      putFloat(KEY_VIBRATION_MULTIPLIER, vibration.multiplier)
       apply()
     }
   }
@@ -93,8 +97,8 @@ data class Settings(
     private const val KEY_HOURS_START_SECONDS = "hours_start_seconds"
     private const val KEY_HOURS_END_SECONDS = "hours_end_seconds"
     private const val KEY_DAYS = "days"
-    private const val KEY_VIBRATION_STYLE_NAME = "vibration_style_name"
-    private const val KEY_VIBRATION_DURATION_MULTIPLIER = "vibration_duration_multiplier"
+    private const val KEY_VIBRATION_PATTERN = "vibration_pattern"
+    private const val KEY_VIBRATION_MULTIPLIER = "vibration_multiplier"
 
     private val DEFAULT_ONE_OFF = OneOff(startedAt = null, pausedAt = null, durations = listOf())
     private const val DEFAULT_PERIODIC = false
@@ -135,10 +139,10 @@ data class Settings(
               startedAt = Instant.ofEpochSecond(getLong(KEY_ONE_OFF_STARTED_AT, 0L)).orNull(),
               pausedAt = Duration.ofSeconds(getLong(KEY_ONE_OFF_PAUSED_AT, 0L)).orNull(),
               durations =
-                getString(KEY_ONE_OFF_DURATIONS, "")?.split(",")?.mapNotNull {
-                  if (it.isNotEmpty()) Duration.ofSeconds(it.toLong()) else null
+                getString(KEY_ONE_OFF_DURATIONS, null)?.run {
+                  split(",").mapNotNull { Duration.ofSeconds(it.toLong()) }
                 }
-                  ?: listOf(),
+                  ?: DEFAULT_ONE_OFF.durations,
             ),
           periodic = getBoolean(KEY_PERIODIC, DEFAULT_PERIODIC),
           runningNotification = getBoolean(KEY_RUNNING_NOTIFICATION, DEFAULT_RUNNING_NOTIFICATION),
@@ -159,9 +163,9 @@ data class Settings(
           vibration =
             Vibration(
               context = context,
-              styleName = getString(KEY_VIBRATION_STYLE_NAME, DEFAULT_VIBRATION.styleName)!!,
-              durationMultiplier =
-                getFloat(KEY_VIBRATION_DURATION_MULTIPLIER, DEFAULT_VIBRATION.durationMultiplier),
+              pattern = getString(KEY_VIBRATION_PATTERN, null)?.asVibrationPattern()
+                  ?: Vibration.DEFAULT.pattern,
+              multiplier = getFloat(KEY_VIBRATION_MULTIPLIER, DEFAULT_VIBRATION.multiplier),
             ),
         )
       }

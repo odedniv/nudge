@@ -30,6 +30,7 @@ fun TitleText(resourceId: Int) {
 fun SubtitleText(resourceId: Int) {
   Text(
     text = stringResource(resourceId),
-    textAlign = TextAlign.Center,
+    modifier = Modifier.padding(top = 4.dp),
+      textAlign = TextAlign.Center,
   )
 }
