@@ -62,7 +62,7 @@ class Notifications(private val context: Context) {
           )
         )
         .setContentText(context.getString(R.string.notifications_running_text))
-        .setSmallIcon(R.mipmap.ic_launcher)
+        .setSmallIcon(R.drawable.ic_notification)
         .setAutoCancel(false)
         .setOngoing(true)
         .setActions(
@@ -82,7 +82,7 @@ class Notifications(private val context: Context) {
       NUDGE_ID,
       Notification.Builder(context, /* channelId = */ vibration.id)
         .setContentTitle(context.getString(R.string.notifications_nudge))
-        .setSmallIcon(R.mipmap.ic_launcher)
+        .setSmallIcon(R.drawable.ic_notification)
         .setCategory(Notification.CATEGORY_ALARM)
         .setTimeoutAfter((vibration.totalDuration + NUDGE_TIMEOUT_BUFFER).toMillis())
         .setActions(stopAction, settingsAction)
