@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +18,6 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Switch
@@ -44,126 +44,124 @@ fun SettingsView(
   onUpdate: (Settings) -> Unit,
   onVibrationUpdate: (Vibration) -> Unit,
 ) {
-  NudgeTheme {
-    var showOneOffDialog by remember { mutableStateOf(false) }
-    var showFrequencyDialog by remember { mutableStateOf(false) }
-    var showHoursStartDialog by remember { mutableStateOf(false) }
-    var showHoursEndDialog by remember { mutableStateOf(false) }
-    var showDaysDialog by remember { mutableStateOf(false) }
-    var showVibrationDialog by remember { mutableStateOf(false) }
+  var showOneOffDialog by remember { mutableStateOf(false) }
+  var showFrequencyDialog by remember { mutableStateOf(false) }
+  var showHoursStartDialog by remember { mutableStateOf(false) }
+  var showHoursEndDialog by remember { mutableStateOf(false) }
+  var showDaysDialog by remember { mutableStateOf(false) }
+  var showVibrationDialog by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
-    ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
-      item { HeaderText(R.string.settings_title) }
-      // one-off
-      item { OneOffChip(value = value.oneOff, onClick = { showOneOffDialog = true }) }
-      // periodic title
-      item { TitleText(R.string.settings_periodic_title) }
-      // periodic toggle
-      item {
-        PeriodicChip(
-          value = value.periodic,
-          oneOff = value.oneOff,
-          onUpdate = { onUpdate(value.copy(periodic = it)) },
-        )
-      }
-      // runningNotification
-      item {
-        RunningNotificationChip(
-          value = value.runningNotification,
-          onUpdate = { onUpdate(value.copy(runningNotification = it)) },
-        )
-      }
-      // frequency
-      item { FrequencyChip(value = value.frequency, onClick = { showFrequencyDialog = true }) }
-      // hours
-      item { SubtitleText(R.string.settings_hours) }
-      item {
-        HoursChip(
-          value = value.hours,
-          onClickStart = { showHoursStartDialog = true },
-          onClickEnd = { showHoursEndDialog = true },
-        )
-      }
-      // days
-      item { SubtitleText(R.string.settings_days) }
-      item { DaysChip(value = value.days, onClick = { showDaysDialog = true }) }
-      // common title
-      item { TitleText(R.string.settings_common_title) }
-      // vibration
-      item { VibrationChip(value = value.vibration, onClick = { showVibrationDialog = true }) }
+  ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
+    item { HeaderText(R.string.settings_title) }
+    // one-off
+    item { OneOffChip(value = value.oneOff, onClick = { showOneOffDialog = true }) }
+    // periodic title
+    item { TitleText(R.string.settings_periodic_title) }
+    // periodic toggle
+    item {
+      PeriodicChip(
+        value = value.periodic,
+        oneOff = value.oneOff,
+        onUpdate = { onUpdate(value.copy(periodic = it)) },
+      )
     }
-    // one-off dialog
-    OneOffDialog(
-      showDialog = showOneOffDialog,
-      value = value.oneOff,
-      onUpdate = { onUpdate(value.copy(oneOff = it)) },
-      onDismiss = { showOneOffDialog = false },
-    )
-    // frequency dialog
-    DurationDialog(
-      showDialog = showFrequencyDialog,
-      showSeconds = Settings.DEBUG,
-      value = value.frequency,
-      onConfirm = {
-        if (it < Settings.MINIMUM_FREQUENCY) {
-          toastMinimumFrequency(context)
-          return@DurationDialog
-        }
-        onUpdate(value.copy(frequency = it))
-        showFrequencyDialog = false
-      },
-      onDismiss = { showFrequencyDialog = false },
-    )
-    // hours.start dialog
-    LocalTimeDialog(
-      showDialog = showHoursStartDialog,
-      showSeconds = false,
-      value = value.hours.start,
-      onConfirm = {
-        if (it >= value.hours.end) {
-          toastHoursMustBeBefore(context, value.hours.end)
-          return@LocalTimeDialog
-        }
-        onUpdate(value.copy(hours = value.hours.copy(start = it)))
-        showHoursStartDialog = false
-      },
-      onDismiss = { showHoursStartDialog = false },
-    )
-    // hours.end dialog
-    LocalTimeDialog(
-      showDialog = showHoursEndDialog,
-      showSeconds = false,
-      value = value.hours.end,
-      onConfirm = {
-        if (it <= value.hours.start) {
-          toastHoursMustBeAfter(context, value.hours.start)
-          return@LocalTimeDialog
-        }
-        onUpdate(value.copy(hours = value.hours.copy(end = it)))
-        showHoursEndDialog = false
-      },
-      onDismiss = { showHoursEndDialog = false },
-    )
-    // days dialog
-    DaysDialog(
-      showDialog = showDaysDialog,
-      value = value.days,
-      onUpdate = { onUpdate(value.copy(days = it)) },
-      onDismiss = { showDaysDialog = false },
-    )
-    // vibration dialog
-    VibrationDialog(
-      showDialog = showVibrationDialog,
-      value = value.vibration,
-      onUpdate = {
-        onUpdate(value.copy(vibration = it))
-        onVibrationUpdate(it)
-      },
-      onDismiss = { showVibrationDialog = false },
-    )
+    // runningNotification
+    item {
+      RunningNotificationChip(
+        value = value.runningNotification,
+        onUpdate = { onUpdate(value.copy(runningNotification = it)) },
+      )
+    }
+    // frequency
+    item { FrequencyChip(value = value.frequency, onClick = { showFrequencyDialog = true }) }
+    // hours
+    item { SubtitleText(R.string.settings_hours) }
+    item {
+      HoursChip(
+        value = value.hours,
+        onClickStart = { showHoursStartDialog = true },
+        onClickEnd = { showHoursEndDialog = true },
+      )
+    }
+    // days
+    item { SubtitleText(R.string.settings_days) }
+    item { DaysChip(value = value.days, onClick = { showDaysDialog = true }) }
+    // common title
+    item { TitleText(R.string.settings_common_title) }
+    // vibration
+    item { VibrationChip(value = value.vibration, onClick = { showVibrationDialog = true }) }
   }
+  // one-off dialog
+  OneOffDialog(
+    showDialog = showOneOffDialog,
+    value = value.oneOff,
+    onUpdate = { onUpdate(value.copy(oneOff = it)) },
+    onDismiss = { showOneOffDialog = false },
+  )
+  // frequency dialog
+  DurationDialog(
+    showDialog = showFrequencyDialog,
+    showSeconds = Settings.DEBUG,
+    value = value.frequency,
+    onConfirm = {
+      if (it < Settings.MINIMUM_FREQUENCY) {
+        toastMinimumFrequency(context)
+        return@DurationDialog
+      }
+      onUpdate(value.copy(frequency = it))
+      showFrequencyDialog = false
+    },
+    onDismiss = { showFrequencyDialog = false },
+  )
+  // hours.start dialog
+  LocalTimeDialog(
+    showDialog = showHoursStartDialog,
+    showSeconds = false,
+    value = value.hours.start,
+    onConfirm = {
+      if (it >= value.hours.end) {
+        toastHoursMustBeBefore(context, value.hours.end)
+        return@LocalTimeDialog
+      }
+      onUpdate(value.copy(hours = value.hours.copy(start = it)))
+      showHoursStartDialog = false
+    },
+    onDismiss = { showHoursStartDialog = false },
+  )
+  // hours.end dialog
+  LocalTimeDialog(
+    showDialog = showHoursEndDialog,
+    showSeconds = false,
+    value = value.hours.end,
+    onConfirm = {
+      if (it <= value.hours.start) {
+        toastHoursMustBeAfter(context, value.hours.start)
+        return@LocalTimeDialog
+      }
+      onUpdate(value.copy(hours = value.hours.copy(end = it)))
+      showHoursEndDialog = false
+    },
+    onDismiss = { showHoursEndDialog = false },
+  )
+  // days dialog
+  DaysDialog(
+    showDialog = showDaysDialog,
+    value = value.days,
+    onUpdate = { onUpdate(value.copy(days = it)) },
+    onDismiss = { showDaysDialog = false },
+  )
+  // vibration dialog
+  VibrationDialog(
+    showDialog = showVibrationDialog,
+    value = value.vibration,
+    onUpdate = {
+      onUpdate(value.copy(vibration = it))
+      onVibrationUpdate(it)
+    },
+    onDismiss = { showVibrationDialog = false },
+  )
 }
 
 @Composable
@@ -313,6 +311,6 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun SettingsViewPreview() {
+fun SettingsPreview() {
   NudgeTheme { SettingsView(value = Settings.DEFAULT, onUpdate = {}, onVibrationUpdate = {}) }
 }

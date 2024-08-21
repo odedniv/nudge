@@ -32,7 +32,7 @@
     <string name="settings_vibration_description">%1$s at %2$d%%</string>
 
     <!-- SettingsOneOffDialog -->
-    <string name="one_off_title">One-off Nudge Timer</string>
+    <string name="one_off_title">One-off Timer</string>
     <string name="one_off_start">Start</string>
     <string name="one_off_pause">Pause</string>
     <string name="one_off_resume">Resume</string>

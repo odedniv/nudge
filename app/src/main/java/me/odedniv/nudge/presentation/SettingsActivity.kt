@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
+import me.odedniv.nudge.presentation.theme.NudgeTheme
 
 class SettingsActivity : ComponentActivity() {
   private val alarmManager: AlarmManager by lazy { requireNotNull(getSystemService()) }
@@ -91,14 +92,16 @@ class SettingsActivity : ComponentActivity() {
         if (event == Lifecycle.Event.ON_RESUME) settings = Settings.commit(this)
       }
 
-      SettingsView(
-        value = settings,
-        onUpdate = {
-          if (it.requestPermissions()) return@SettingsView
-          settings = it.apply { write() }
-        },
-        onVibrationUpdate = { vibrationExecutor.tryEmit(it) },
-      )
+      NudgeTheme {
+        SettingsView(
+          value = settings,
+          onUpdate = {
+            if (it.requestPermissions()) return@SettingsView
+            settings = it.apply { write() }
+          },
+          onVibrationUpdate = { vibrationExecutor.tryEmit(it) },
+        )
+      }
     }
   }
 

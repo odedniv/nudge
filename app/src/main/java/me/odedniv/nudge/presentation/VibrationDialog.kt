@@ -2,6 +2,7 @@ package me.odedniv.nudge.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -13,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
@@ -40,7 +40,7 @@ fun VibrationDialog(
 
 @Composable
 private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
-  ScalingLazyColumn {
+  ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
     item { HeaderText(R.string.vibration_title) }
     // multiplier
     item { SubtitleText(R.string.vibration_multiplier) }
@@ -101,7 +101,7 @@ private fun PatternSlider(value: VibrationPatternValue, onUpdate: (VibrationPatt
 
 @Composable
 private fun <T> ButtonSlider(value: T, options: List<Pair<T, String>>, onUpdate: (T) -> Unit) {
-  Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+  Row(horizontalArrangement = Arrangement.Center) {
     for ((optionValue, optionText) in options) {
       Button(
         onClick = { onUpdate(optionValue) },
@@ -138,6 +138,6 @@ private fun RemoveButton(onClick: () -> Unit) {
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun VibrationAlertPreview() {
+fun VibrationPreview() {
   NudgeTheme { VibrationView(value = Settings.DEFAULT.vibration, onUpdate = {}) }
 }

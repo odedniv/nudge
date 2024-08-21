@@ -14,7 +14,7 @@ import androidx.wear.compose.material.Text
 fun HeaderText(resourceId: Int) {
   Text(
     text = stringResource(resourceId),
-    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+    modifier = Modifier.padding(bottom = 16.dp),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.ExtraBold,
   )
@@ -24,7 +24,7 @@ fun HeaderText(resourceId: Int) {
 fun TitleText(resourceId: Int) {
   Text(
     text = stringResource(resourceId),
-    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    modifier = Modifier.padding(vertical = 8.dp),
     textAlign = TextAlign.Center,
     fontWeight = FontWeight.Bold,
   )
@@ -34,7 +34,7 @@ fun TitleText(resourceId: Int) {
 fun SubtitleText(resourceId: Int) {
   Text(
     text = stringResource(resourceId),
-    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+    modifier = Modifier.padding(top = 4.dp),
     textAlign = TextAlign.Center,
   )
 }

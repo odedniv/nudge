@@ -249,7 +249,7 @@ private fun toastMinimumDuration(context: Context) {
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun SettingsOneOffViewPreview() {
+fun OneOffDialogPreview() {
   NudgeTheme {
     OneOffView(
       value =
