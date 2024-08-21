@@ -25,8 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListState
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
@@ -51,32 +49,18 @@ fun OneOffDialog(
   value: Settings.OneOff,
   onUpdate: (Settings.OneOff) -> Unit,
   onDismiss: () -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
-  Dialog(
-    showDialog = showDialog,
-    onDismissRequest = onDismiss,
-    scrollState = scrollState,
-  ) {
+  Dialog(showDialog = showDialog, onDismissRequest = onDismiss) {
     var now by remember { mutableStateOf(Instant.now()) }
     OneOffTimer(value, now) { now = it }
-    OneOffView(
-      value = value,
-      now = now,
-      onUpdate = onUpdate,
-    )
+    OneOffView(value = value, now = now, onUpdate = onUpdate)
   }
 }
 
 @Composable
-private fun OneOffView(
-  value: Settings.OneOff,
-  now: Instant,
-  onUpdate: (Settings.OneOff) -> Unit,
-) {
+private fun OneOffView(value: Settings.OneOff, now: Instant, onUpdate: (Settings.OneOff) -> Unit) {
   var showDurationDialog by remember { mutableStateOf(false) }
 
-  val scrollState = rememberScalingLazyListState()
   val context = LocalContext.current
 
   val isEnabled = value.isEnabled(now)
@@ -84,6 +68,7 @@ private fun OneOffView(
   val elapsed = value.elapsed(now)
 
   ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
+    item { HeaderText(R.string.one_off_title) }
     if (isEnabled) {
       // pause/resume
       item {
@@ -96,20 +81,18 @@ private fun OneOffView(
             PauseButton(
               onClick = {
                 onUpdate(value.copy(pausedAt = Duration.between(value.startedAt, Instant.now())))
-              },
+              }
             )
           } else {
             // resume
             ResumeButton(
               onClick = {
                 onUpdate(value.copy(startedAt = Instant.now() - value.pausedAt, pausedAt = null))
-              },
+              }
             )
           }
           // stop
-          StopButton(
-            onClick = { onUpdate(value.copy(startedAt = null, pausedAt = null)) },
-          )
+          StopButton(onClick = { onUpdate(value.copy(startedAt = null, pausedAt = null)) })
         }
       }
     } else if (value.durations.isNotEmpty()) {
@@ -123,7 +106,7 @@ private fun OneOffView(
           stringResource(
             R.string.settings_one_off_running,
             elapsed!!.format(),
-            value.durations.sum().format()
+            value.durations.sum().format(),
           )
         } else {
           stringResource(R.string.settings_one_off_paused, value.total.format())
@@ -165,7 +148,6 @@ private fun OneOffView(
       showDurationDialog = false
     },
     onDismiss = { showDurationDialog = false },
-    scrollState = scrollState,
   )
 }
 
@@ -260,7 +242,7 @@ private fun toastMinimumDuration(context: Context) {
         R.string.one_off_minimum_duration_toast,
         Settings.OneOff.MINIMUM_DURATION.seconds,
       ),
-      Toast.LENGTH_SHORT
+      Toast.LENGTH_SHORT,
     )
     .show()
 }

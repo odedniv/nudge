@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Switch
@@ -53,17 +52,12 @@ fun SettingsView(
     var showDaysDialog by remember { mutableStateOf(false) }
     var showVibrationDialog by remember { mutableStateOf(false) }
 
-    val scrollState = rememberScalingLazyListState()
     val context = LocalContext.current
 
     ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
+      item { HeaderText(R.string.settings_title) }
       // one-off
-      item {
-        OneOffChip(
-          value = value.oneOff,
-          onClick = { showOneOffDialog = true },
-        )
-      }
+      item { OneOffChip(value = value.oneOff, onClick = { showOneOffDialog = true }) }
       // periodic title
       item { TitleText(R.string.settings_periodic_title) }
       // periodic toggle
@@ -82,12 +76,7 @@ fun SettingsView(
         )
       }
       // frequency
-      item {
-        FrequencyChip(
-          value = value.frequency,
-          onClick = { showFrequencyDialog = true },
-        )
-      }
+      item { FrequencyChip(value = value.frequency, onClick = { showFrequencyDialog = true }) }
       // hours
       item { SubtitleText(R.string.settings_hours) }
       item {
@@ -99,21 +88,11 @@ fun SettingsView(
       }
       // days
       item { SubtitleText(R.string.settings_days) }
-      item {
-        DaysChip(
-          value = value.days,
-          onClick = { showDaysDialog = true },
-        )
-      }
+      item { DaysChip(value = value.days, onClick = { showDaysDialog = true }) }
       // common title
       item { TitleText(R.string.settings_common_title) }
       // vibration
-      item {
-        VibrationChip(
-          value = value.vibration,
-          onClick = { showVibrationDialog = true },
-        )
-      }
+      item { VibrationChip(value = value.vibration, onClick = { showVibrationDialog = true }) }
     }
     // one-off dialog
     OneOffDialog(
@@ -121,7 +100,6 @@ fun SettingsView(
       value = value.oneOff,
       onUpdate = { onUpdate(value.copy(oneOff = it)) },
       onDismiss = { showOneOffDialog = false },
-      scrollState = scrollState,
     )
     // frequency dialog
     DurationDialog(
@@ -137,7 +115,6 @@ fun SettingsView(
         showFrequencyDialog = false
       },
       onDismiss = { showFrequencyDialog = false },
-      scrollState = scrollState,
     )
     // hours.start dialog
     LocalTimeDialog(
@@ -153,7 +130,6 @@ fun SettingsView(
         showHoursStartDialog = false
       },
       onDismiss = { showHoursStartDialog = false },
-      scrollState = scrollState,
     )
     // hours.end dialog
     LocalTimeDialog(
@@ -169,7 +145,6 @@ fun SettingsView(
         showHoursEndDialog = false
       },
       onDismiss = { showHoursEndDialog = false },
-      scrollState = scrollState,
     )
     // days dialog
     DaysDialog(
@@ -177,7 +152,6 @@ fun SettingsView(
       value = value.days,
       onUpdate = { onUpdate(value.copy(days = it)) },
       onDismiss = { showDaysDialog = false },
-      scrollState = scrollState,
     )
     // vibration dialog
     VibrationDialog(
@@ -188,7 +162,6 @@ fun SettingsView(
         onVibrationUpdate(it)
       },
       onDismiss = { showVibrationDialog = false },
-      scrollState = scrollState,
     )
   }
 }
@@ -212,7 +185,7 @@ private fun OneOffChip(value: Settings.OneOff, onClick: () -> Unit) {
         )
       }
     },
-    modifier = Modifier.fillMaxWidth()
+    modifier = Modifier.fillMaxWidth(),
   )
 }
 
@@ -267,15 +240,9 @@ private fun HoursChip(value: Hours, onClickStart: () -> Unit, onClickEnd: () -> 
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier.fillMaxWidth(),
   ) {
-    Chip(
-      onClick = onClickStart,
-      label = { Text(value.start.toString()) },
-    )
+    Chip(onClick = onClickStart, label = { Text(value.start.toString()) })
     Text("-")
-    Chip(
-      onClick = onClickEnd,
-      label = { Text(value.end.toString()) },
-    )
+    Chip(onClick = onClickEnd, label = { Text(value.end.toString()) })
   }
 }
 
@@ -319,9 +286,9 @@ private fun toastMinimumFrequency(context: Context) {
       context,
       context.getString(
         R.string.settings_frequency_minimum_toast,
-        Settings.MINIMUM_FREQUENCY.toMinutes()
+        Settings.MINIMUM_FREQUENCY.toMinutes(),
       ),
-      Toast.LENGTH_SHORT
+      Toast.LENGTH_SHORT,
     )
     .show()
 }
@@ -330,7 +297,7 @@ private fun toastHoursMustBeBefore(context: Context, value: LocalTime) {
   Toast.makeText(
       context,
       context.getString(R.string.settings_hours_must_be_before, value),
-      Toast.LENGTH_SHORT
+      Toast.LENGTH_SHORT,
     )
     .show()
 }
@@ -339,7 +306,7 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
   Toast.makeText(
       context,
       context.getString(R.string.settings_hours_must_be_after, value),
-      Toast.LENGTH_SHORT
+      Toast.LENGTH_SHORT,
     )
     .show()
 }
@@ -347,11 +314,5 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
 fun SettingsViewPreview() {
-  NudgeTheme {
-    SettingsView(
-      value = Settings.DEFAULT,
-      onUpdate = {},
-      onVibrationUpdate = {},
-    )
-  }
+  NudgeTheme { SettingsView(value = Settings.DEFAULT, onUpdate = {}, onVibrationUpdate = {}) }
 }

@@ -2,7 +2,8 @@
     <string name="app_name">Nudge</string>
 
     <!-- SettingsActivity -->
-    <string name="settings_one_off">One-off…</string>
+    <string name="settings_title">Nudge Settings</string>
+    <string name="settings_one_off">One-off timer…</string>
     <string name="settings_one_off_running">%1$s / %2$s</string>
     <string name="settings_one_off_paused">%s</string>
     <string name="settings_periodic_title">Periodic</string>
@@ -31,6 +32,7 @@
     <string name="settings_vibration_description">%1$s at %2$d%%</string>
 
     <!-- SettingsOneOffDialog -->
+    <string name="one_off_title">One-off Nudge Timer</string>
     <string name="one_off_start">Start</string>
     <string name="one_off_pause">Pause</string>
     <string name="one_off_resume">Resume</string>
@@ -53,6 +55,7 @@
     </string-array>
 
     <!-- VibrationDialog -->
+    <string name="vibration_title">Vibration Pattern</string>
     <string name="vibration_multiplier">Multiplier</string>
     <string name="vibration_pattern">Pattern</string>
     <string name="vibration_pattern_add">Add pattern</string>

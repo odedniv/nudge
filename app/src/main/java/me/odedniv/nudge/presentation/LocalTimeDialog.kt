@@ -18,12 +18,10 @@ fun LocalTimeDialog(
   value: LocalTime,
   onConfirm: (LocalTime) -> Unit,
   onDismiss: () -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
   Dialog(
     showDialog = showDialog,
     onDismissRequest = onDismiss,
-    scrollState = scrollState,
   ) {
     LocalTimeView(
       showSeconds = showSeconds,
@@ -40,7 +38,6 @@ fun DurationDialog(
   value: Duration,
   onConfirm: (Duration) -> Unit,
   onDismiss: () -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
   LocalTimeDialog(
     showDialog = showDialog,
@@ -48,7 +45,6 @@ fun DurationDialog(
     value = LocalTime.MIN + value,
     onConfirm = { onConfirm(Duration.between(LocalTime.MIN, it)) },
     onDismiss = onDismiss,
-    scrollState = scrollState,
   )
 }
 

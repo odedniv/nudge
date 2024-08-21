@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
-import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
@@ -33,61 +32,50 @@ fun VibrationDialog(
   value: Vibration,
   onUpdate: (Vibration) -> Unit,
   onDismiss: () -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
-  Dialog(
-    showDialog = showDialog,
-    onDismissRequest = { onDismiss() },
-    scrollState = scrollState,
-  ) {
-    VibrationView(
-      value = value,
-      onUpdate = onUpdate,
-    )
+  Dialog(showDialog = showDialog, onDismissRequest = { onDismiss() }) {
+    VibrationView(value = value, onUpdate = onUpdate)
   }
 }
 
 @Composable
 private fun VibrationView(value: Vibration, onUpdate: (Vibration) -> Unit) {
-  NudgeTheme {
-    ScalingLazyColumn {
-      // multiplier
-      item { SubtitleText(R.string.vibration_multiplier) }
+  ScalingLazyColumn {
+    item { HeaderText(R.string.vibration_title) }
+    // multiplier
+    item { SubtitleText(R.string.vibration_multiplier) }
+    item {
+      MultiplierSlider(
+        value = value.multiplier,
+        onUpdate = { onUpdate(value.copy(multiplier = it)) },
+      )
+    }
+    // pattern
+    item { SubtitleText(R.string.vibration_pattern) }
+    for ((index, patternValue) in value.pattern.withIndex()) {
       item {
-        MultiplierSlider(
-          value = value.multiplier,
-          onUpdate = { onUpdate(value.copy(multiplier = it)) },
+        PatternSlider(
+          value = patternValue,
+          onUpdate = { newPatternValue ->
+            onUpdate(
+              value.copy(
+                pattern =
+                  value.pattern.mapIndexed { i, v -> if (i == index) newPatternValue else v }
+              )
+            )
+          },
         )
       }
-      // pattern
-      item { SubtitleText(R.string.vibration_pattern) }
-      for ((index, patternValue) in value.pattern.withIndex()) {
-        item {
-          PatternSlider(
-            value = patternValue,
-            onUpdate = { newPatternValue ->
-              onUpdate(
-                value.copy(
-                  pattern =
-                    value.pattern.mapIndexed { i, v -> if (i == index) newPatternValue else v }
-                )
-              )
-            },
-          )
+    }
+    // add/delete pattern
+    item {
+      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        if (value.pattern.size > 1) {
+          RemoveButton(onClick = { onUpdate(value.copy(pattern = value.pattern.dropLast(1))) })
         }
-      }
-      // add/delete pattern
-      item {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-          if (value.pattern.size > 1) {
-            RemoveButton(
-              onClick = { onUpdate(value.copy(pattern = value.pattern.dropLast(1))) },
-            )
-          }
-          AddButton(
-            onClick = { onUpdate(value.copy(pattern = value.pattern + value.pattern.last())) },
-          )
-        }
+        AddButton(
+          onClick = { onUpdate(value.copy(pattern = value.pattern + value.pattern.last())) }
+        )
       }
     }
   }
@@ -103,10 +91,7 @@ private fun MultiplierSlider(value: Float, onUpdate: (Float) -> Unit) {
 }
 
 @Composable
-private fun PatternSlider(
-  value: VibrationPatternValue,
-  onUpdate: (VibrationPatternValue) -> Unit,
-) {
+private fun PatternSlider(value: VibrationPatternValue, onUpdate: (VibrationPatternValue) -> Unit) {
   ButtonSlider(
     value = value,
     options = listOf(1 to "1", 2 to "2", 3 to "3"),
@@ -116,7 +101,7 @@ private fun PatternSlider(
 
 @Composable
 private fun <T> ButtonSlider(value: T, options: List<Pair<T, String>>, onUpdate: (T) -> Unit) {
-  Row(horizontalArrangement = Arrangement.Center) {
+  Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
     for ((optionValue, optionText) in options) {
       Button(
         onClick = { onUpdate(optionValue) },

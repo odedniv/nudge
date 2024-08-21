@@ -26,12 +26,10 @@ fun DaysDialog(
   value: Set<DayOfWeek>,
   onUpdate: (Set<DayOfWeek>) -> Unit,
   onDismiss: () -> Unit,
-  scrollState: ScalingLazyListState,
 ) {
   Dialog(
     showDialog = showDialog,
     onDismissRequest = onDismiss,
-    scrollState = scrollState,
   ) {
     DaysView(
       value = value,
