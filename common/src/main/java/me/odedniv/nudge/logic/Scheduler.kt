@@ -17,7 +17,7 @@ import java.time.ZonedDateTime
 import kotlin.time.Duration.Companion.days
 import kotlin.time.toJavaDuration
 import me.odedniv.nudge.services.NudgeReceiver
-import me.odedniv.nudge.ui.SettingsActivity
+import me.odedniv.nudge.ui.SETTINGS_ACTIVITY
 
 class Scheduler(private val context: Context) {
   private val alarmManager: AlarmManager by lazy { requireNotNull(context.getSystemService()) }
@@ -59,7 +59,7 @@ class Scheduler(private val context: Context) {
       PendingIntent.getActivity(
         context,
         /* requestCode = */ 0,
-        Intent(context, SettingsActivity::class.java),
+        Intent().setComponent(SETTINGS_ACTIVITY),
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 

@@ -23,6 +23,9 @@ data class Settings(
   val days: Set<DayOfWeek>,
   val vibration: Vibration,
 ) {
+  val requiresAlarm: Boolean = oneOff.startedAt != null || periodic
+  val requiresNotifications: Boolean = oneOff.startedAt != null || periodic || runningNotification
+
   data class OneOff(
     val startedAt: Instant?,
     val pausedAt: Duration?,
