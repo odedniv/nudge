@@ -2,7 +2,6 @@ package me.odedniv.nudge.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.horologist.composables.TimePicker
@@ -42,9 +41,7 @@ fun DurationDialog(
 
 @Composable
 private fun LocalTimeView(showSeconds: Boolean, value: LocalTime, onConfirm: (LocalTime) -> Unit) {
-  ScalingLazyColumn {
-    item { TimePicker(time = value, onTimeConfirm = onConfirm, showSeconds = showSeconds) }
-  }
+  TimePicker(time = value, onTimeConfirm = onConfirm, showSeconds = showSeconds)
 }
 
 @Preview(device = WearDevices.LARGE_ROUND)
