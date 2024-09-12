@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,7 +24,7 @@ import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.logic.VibrationPatternValue
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 @Composable
 fun VibrationDialog(

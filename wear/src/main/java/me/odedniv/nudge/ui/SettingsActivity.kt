@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import android.Manifest.permission
 import android.app.AlarmManager
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.Vibration
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 class SettingsActivity : ComponentActivity() {
   private val alarmManager: AlarmManager by lazy { requireNotNull(getSystemService()) }

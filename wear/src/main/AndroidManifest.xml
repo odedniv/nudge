@@ -20,7 +20,7 @@
         android:theme="@android:style/Theme.DeviceDefault">
 
         <activity
-            android:name=".presentation.SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:exported="true"
             android:taskAffinity="me.odedniv.nudge.settings"
             android:theme="@android:style/Theme.DeviceDefault">

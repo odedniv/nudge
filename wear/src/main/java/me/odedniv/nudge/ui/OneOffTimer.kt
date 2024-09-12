@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

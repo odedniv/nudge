@@ -15,8 +15,8 @@ import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 import me.odedniv.nudge.R
-import me.odedniv.nudge.presentation.SettingsActivity
 import me.odedniv.nudge.services.ToggleReceiver
+import me.odedniv.nudge.ui.SettingsActivity
 
 class Notifications(private val context: Context) {
   private val notificationManager: NotificationManager by lazy {

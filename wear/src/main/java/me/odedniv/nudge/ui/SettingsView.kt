@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import android.content.Context
 import android.widget.Toast
@@ -36,7 +36,7 @@ import me.odedniv.nudge.logic.Vibration
 import me.odedniv.nudge.logic.allDays
 import me.odedniv.nudge.logic.asString
 import me.odedniv.nudge.logic.format
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 @Composable
 fun SettingsView(

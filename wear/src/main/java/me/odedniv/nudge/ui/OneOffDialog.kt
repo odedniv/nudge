@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import android.content.Context
 import android.widget.Toast
@@ -41,7 +41,7 @@ import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.Settings
 import me.odedniv.nudge.logic.format
 import me.odedniv.nudge.logic.sum
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 @Composable
 fun OneOffDialog(

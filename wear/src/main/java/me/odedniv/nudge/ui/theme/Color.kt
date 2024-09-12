@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation.theme
+package me.odedniv.nudge.ui.theme
 
 import androidx.wear.compose.material.Colors
 

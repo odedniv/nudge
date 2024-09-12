@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -8,7 +8,7 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.horologist.composables.TimePicker
 import java.time.Duration
 import java.time.LocalTime
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 @Composable
 fun LocalTimeDialog(

@@ -1,4 +1,4 @@
-package me.odedniv.nudge.presentation
+package me.odedniv.nudge.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -16,7 +16,7 @@ import java.time.DayOfWeek
 import me.odedniv.nudge.R
 import me.odedniv.nudge.logic.allDays
 import me.odedniv.nudge.logic.xor
-import me.odedniv.nudge.presentation.theme.NudgeTheme
+import me.odedniv.nudge.ui.theme.NudgeTheme
 
 @Composable
 fun DaysDialog(
