@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Nudge"
-include ':app'
+include ':wear'
