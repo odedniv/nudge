@@ -33,7 +33,7 @@ class Scheduler(private val context: Context) {
       Log.i(TAG, "Scheduling next nudge for: $nextTrigger")
       alarmManager.setAlarmClock(
         AlarmClockInfo(nextTrigger.toEpochMilli(), settingsPendingIntent),
-        nudgePendingIntent
+        nudgePendingIntent,
       )
     } else {
       alarmManager.cancel(nudgePendingIntent)
@@ -51,7 +51,7 @@ class Scheduler(private val context: Context) {
         context,
         /* requestCode = */ 0,
         Intent(context, NudgeReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
   private val settingsPendingIntent
@@ -60,7 +60,7 @@ class Scheduler(private val context: Context) {
         context,
         /* requestCode = */ 0,
         Intent(context, SettingsActivity::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
   private fun Settings.nextTrigger(): Instant? {

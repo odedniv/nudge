@@ -27,7 +27,7 @@ class Notifications(private val context: Context) {
     NotificationChannel(
         RUNNING_CHANNEL_ID,
         context.getString(R.string.notifications_running_started),
-        IMPORTANCE_LOW
+        IMPORTANCE_LOW,
       )
       .also { notificationManager.createNotificationChannel(it) }
     // Re-create channel group to remove all previous channels.
@@ -65,11 +65,8 @@ class Notifications(private val context: Context) {
         .setSmallIcon(R.drawable.ic_notification)
         .setAutoCancel(false)
         .setOngoing(true)
-        .setActions(
-          if (started) stopAction else startAction,
-          settingsAction,
-        )
-        .build()
+        .setActions(if (started) stopAction else startAction, settingsAction)
+        .build(),
     )
   }
 
@@ -80,7 +77,7 @@ class Notifications(private val context: Context) {
   fun nudge(vibration: Vibration) {
     notificationManager.notify(
       NUDGE_ID,
-      Notification.Builder(context, /* channelId = */ vibration.id)
+      Notification.Builder(context, /* channelId= */ vibration.id)
         .setContentTitle(context.getString(R.string.notifications_nudge))
         .setSmallIcon(R.drawable.ic_notification)
         .setCategory(Notification.CATEGORY_ALARM)
@@ -88,8 +85,8 @@ class Notifications(private val context: Context) {
         .setActions(stopAction, settingsAction)
         .setAutoCancel(true)
         // Unused except to show heads-up display.
-        .setFullScreenIntent(headsUpPendingIntent, /* highPriority = */ true)
-        .build()
+        .setFullScreenIntent(headsUpPendingIntent, /* highPriority= */ true)
+        .build(),
     )
   }
 
@@ -116,7 +113,7 @@ class Notifications(private val context: Context) {
       context,
       /* requestCode = */ 0,
       Intent(context, ToggleReceiver::class.java).putExtra(ToggleReceiver.EXTRA_TO, to),
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
   private val headsUpPendingIntent
@@ -125,7 +122,7 @@ class Notifications(private val context: Context) {
         context,
         /* requestCode = */ 0,
         Intent(context, SettingsActivity::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
   private val settingsAction
@@ -137,8 +134,8 @@ class Notifications(private val context: Context) {
             context,
             /* requestCode = */ 0,
             Intent(context, SettingsActivity::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-          )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+          ),
         )
         .build()
 

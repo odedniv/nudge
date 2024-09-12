@@ -56,7 +56,7 @@ data class Vibration(
   private val vibrationEffect by lazy {
     VibrationEffect.createWaveform(
       /* timings = */ timings.map { it.toMillis() }.toLongArray(),
-      /* repeat = */ -1
+      /* repeat = */ -1,
     )
   }
 
@@ -66,11 +66,6 @@ data class Vibration(
     private val PATTERN_VALUE = 200.milliseconds.toJavaDuration()
 
     @SuppressLint("StaticFieldLeak") // context is null
-    val DEFAULT =
-      Vibration(
-        context = null,
-        pattern = listOf(1, 2, 3),
-        multiplier = 0.5f,
-      )
+    val DEFAULT = Vibration(context = null, pattern = listOf(1, 2, 3), multiplier = 0.5f)
   }
 }

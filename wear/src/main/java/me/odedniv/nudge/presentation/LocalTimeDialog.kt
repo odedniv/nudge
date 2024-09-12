@@ -3,7 +3,6 @@ package me.odedniv.nudge.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.horologist.composables.TimePicker
@@ -19,15 +18,8 @@ fun LocalTimeDialog(
   onConfirm: (LocalTime) -> Unit,
   onDismiss: () -> Unit,
 ) {
-  Dialog(
-    showDialog = showDialog,
-    onDismissRequest = onDismiss,
-  ) {
-    LocalTimeView(
-      showSeconds = showSeconds,
-      value = value,
-      onConfirm = onConfirm,
-    )
+  Dialog(showDialog = showDialog, onDismissRequest = onDismiss) {
+    LocalTimeView(showSeconds = showSeconds, value = value, onConfirm = onConfirm)
   }
 }
 
@@ -49,30 +41,14 @@ fun DurationDialog(
 }
 
 @Composable
-private fun LocalTimeView(
-  showSeconds: Boolean,
-  value: LocalTime,
-  onConfirm: (LocalTime) -> Unit,
-) {
+private fun LocalTimeView(showSeconds: Boolean, value: LocalTime, onConfirm: (LocalTime) -> Unit) {
   ScalingLazyColumn {
-    item {
-      TimePicker(
-        time = value,
-        onTimeConfirm = onConfirm,
-        showSeconds = showSeconds,
-      )
-    }
+    item { TimePicker(time = value, onTimeConfirm = onConfirm, showSeconds = showSeconds) }
   }
 }
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
 fun LocalTimeViewPreview() {
-  NudgeTheme {
-    LocalTimeView(
-      showSeconds = true,
-      value = LocalTime.of(12, 34),
-      onConfirm = {},
-    )
-  }
+  NudgeTheme { LocalTimeView(showSeconds = true, value = LocalTime.of(12, 34), onConfirm = {}) }
 }

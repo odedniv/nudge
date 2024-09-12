@@ -8,8 +8,7 @@ import kotlin.math.roundToLong
 
 fun Iterable<Duration>.sum(): Duration = fold(Duration.ZERO, Duration::plus)
 
-operator fun Duration.times(multiplier: Int): Duration =
-  multipliedBy(multiplier.toLong())
+operator fun Duration.times(multiplier: Int): Duration = multipliedBy(multiplier.toLong())
 
 operator fun Duration.times(multiplier: Float): Duration =
   Duration.ofNanos((toNanos() * multiplier).roundToLong())

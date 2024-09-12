@@ -5,10 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
-import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Text
@@ -27,22 +25,13 @@ fun DaysDialog(
   onUpdate: (Set<DayOfWeek>) -> Unit,
   onDismiss: () -> Unit,
 ) {
-  Dialog(
-    showDialog = showDialog,
-    onDismissRequest = onDismiss,
-  ) {
-    DaysView(
-      value = value,
-      onUpdate = onUpdate,
-    )
+  Dialog(showDialog = showDialog, onDismissRequest = onDismiss) {
+    DaysView(value = value, onUpdate = onUpdate)
   }
 }
 
 @Composable
-private fun DaysView(
-  value: Set<DayOfWeek>,
-  onUpdate: (Set<DayOfWeek>) -> Unit,
-) {
+private fun DaysView(value: Set<DayOfWeek>, onUpdate: (Set<DayOfWeek>) -> Unit) {
   ScalingLazyColumn(anchorType = ScalingLazyListAnchorType.ItemStart) {
     for (day in allDays()) {
       item {
@@ -63,9 +52,6 @@ private fun DaysView(
 @Composable
 fun DaysViewPreview() {
   NudgeTheme {
-    DaysView(
-      value = setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
-      onUpdate = {},
-    )
+    DaysView(value = setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY), onUpdate = {})
   }
 }

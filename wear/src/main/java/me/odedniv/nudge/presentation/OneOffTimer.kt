@@ -9,10 +9,10 @@ import me.odedniv.nudge.logic.Settings
 @Composable
 fun OneOffTimer(value: Settings.OneOff, initial: Instant, onUpdate: (Instant) -> Unit) {
   LaunchedEffect(value) {
-      if (!value.isRunning(initial)) return@LaunchedEffect
-      while (true) {
-          onUpdate(Instant.now())
-          delay(100)
-      }
+    if (!value.isRunning(initial)) return@LaunchedEffect
+    while (true) {
+      onUpdate(Instant.now())
+      delay(100)
+    }
   }
 }

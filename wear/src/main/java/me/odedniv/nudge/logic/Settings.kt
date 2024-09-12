@@ -158,7 +158,8 @@ data class Settings(
                   getLong(KEY_HOURS_END_SECONDS, DEFAULT_HOURS.end.toSecondOfDay().toLong())
                 ),
             ),
-          days = getStringSet(KEY_DAYS, DEFAULT_DAYS_NAMES)?.map { DayOfWeek.valueOf(it) }?.toSet()
+          days =
+            getStringSet(KEY_DAYS, DEFAULT_DAYS_NAMES)?.map { DayOfWeek.valueOf(it) }?.toSet()
               ?: DEFAULT_DAYS,
           vibration =
             Vibration(
@@ -166,8 +167,7 @@ data class Settings(
               pattern =
                 getString(KEY_VIBRATION_PATTERN, null)
                   ?.takeIf { it.isNotEmpty() }
-                  ?.asVibrationPattern()
-                  ?: Vibration.DEFAULT.pattern,
+                  ?.asVibrationPattern() ?: Vibration.DEFAULT.pattern,
               multiplier = getFloat(KEY_VIBRATION_MULTIPLIER, DEFAULT_VIBRATION.multiplier),
             ),
         )
