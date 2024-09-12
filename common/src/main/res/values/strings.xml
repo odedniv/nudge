@@ -3,14 +3,14 @@
 
     <!-- SettingsActivity -->
     <string name="settings_title">Nudge Settings</string>
-    <string name="settings_one_off">One-off timer…</string>
+    <string name="settings_one_off">One-off timer</string>
     <string name="settings_one_off_running">%1$s / %2$s</string>
     <string name="settings_one_off_paused">%s</string>
     <string name="settings_periodic_title">Periodic</string>
     <string name="settings_periodic_start">Start</string>
     <string name="settings_periodic_stop">Stop</string>
     <string name="settings_running_notification">Notification</string>
-    <string name="settings_frequency">Frequency…</string>
+    <string name="settings_frequency">Frequency</string>
     <string name="settings_frequency_description">Every %d minutes</string>
     <string name="settings_frequency_minimum_toast">Can\'t be lower than %d minutes.</string>
     <string name="settings_hours">Active hours</string>
@@ -20,15 +20,15 @@
     <string-array name="settings_days_names">
         <!-- Order of DayOfWeek.value. -->
         <item>M</item>
-        <item>T</item>
+        <item>Tue</item>
         <item>W</item>
-        <item>T</item>
+        <item>Thu</item>
         <item>F</item>
         <item>Sat</item>
         <item>Sun</item>
     </string-array>
     <string name="settings_common_title">Other settings</string>
-    <string name="settings_vibration">Vibration…</string>
+    <string name="settings_vibration">Vibration</string>
     <string name="settings_vibration_description">%1$s at %2$d%%</string>
 
     <!-- SettingsOneOffDialog -->
@@ -54,6 +54,19 @@
         <item>Sunday</item>
     </string-array>
 
+    <!-- LocalTimeDialog -->
+    <string name="time_hour">Hour</string>
+    <string name="time_minute">Minute</string>
+    <string name="time_second">Second</string>
+    <string name="time_period_toggle">Select AM or PM</string>
+    <string name="time_period_am">AM</string>
+    <string name="time_period_pm">PM</string>
+    <string name="time_hour_suffix">%1$d o\'clock</string>
+    <string name="time_hour_24h_suffix">%1$d hours</string>
+    <string name="time_minute_suffix">%1$d minutes</string>
+    <string name="time_second_suffix">%1$d seconds</string>
+
+
     <!-- VibrationDialog -->
     <string name="vibration_title">Vibration Pattern</string>
     <string name="vibration_multiplier">Multiplier</string>
@@ -70,4 +83,9 @@
     <string name="notifications_running_settings">Settings</string>
 
     <string name="notifications_nudge">Nudge!</string>
+
+    <!-- Common -->
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_done">Done</string>
+    <string name="dialog_dismiss">Dismiss</string>
 </resources>

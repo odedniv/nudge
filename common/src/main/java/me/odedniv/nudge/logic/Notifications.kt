@@ -5,7 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
-import android.app.NotificationManager.IMPORTANCE_LOW
+import android.app.NotificationManager.IMPORTANCE_MIN
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -27,7 +27,7 @@ class Notifications(private val context: Context) {
     NotificationChannel(
         RUNNING_CHANNEL_ID,
         context.getString(R.string.notifications_running_started),
-        IMPORTANCE_LOW,
+        IMPORTANCE_MIN,
       )
       .also { notificationManager.createNotificationChannel(it) }
     // Re-create channel group to remove all previous channels.
@@ -46,6 +46,7 @@ class Notifications(private val context: Context) {
       .apply {
         group = NUDGE_CHANNEL_GROUP_ID
         vibrationPattern = settings.vibration.timings.map { it.toMillis() }.toLongArray()
+        setSound(null, null)
         setBypassDnd(true)
       }
       .also { notificationManager.createNotificationChannel(it) }
