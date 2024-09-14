@@ -46,6 +46,6 @@ private fun LocalTimeView(showSeconds: Boolean, value: LocalTime, onConfirm: (Lo
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun LocalTimeViewPreview() {
+fun LocalTimePreview() {
   NudgeTheme { LocalTimeView(showSeconds = true, value = LocalTime.of(12, 34), onConfirm = {}) }
 }

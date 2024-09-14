@@ -312,5 +312,6 @@ private fun toastHoursMustBeAfter(context: Context, value: LocalTime) {
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
 fun SettingsPreview() {
-  NudgeTheme { SettingsView(value = Settings.DEFAULT, onUpdate = {}, onVibrationUpdate = {}) }
+  var value by remember { mutableStateOf(Settings.DEFAULT) }
+  NudgeTheme { SettingsView(value = value, onUpdate = { value = it }, onVibrationUpdate = {}) }
 }

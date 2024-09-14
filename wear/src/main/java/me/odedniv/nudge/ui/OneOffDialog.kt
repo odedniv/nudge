@@ -249,18 +249,22 @@ private fun toastMinimumDuration(context: Context) {
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun OneOffDialogPreview() {
+fun OneOffPreview() {
+  var value by remember {
+    mutableStateOf(
+      Settings.OneOff(
+        startedAt = Instant.EPOCH,
+        pausedAt = null,
+        durations =
+          listOf(5.minutes, 10.minutes + 3.seconds, 10.minutes).map { it.toJavaDuration() },
+      )
+    )
+  }
   NudgeTheme {
     OneOffView(
-      value =
-        Settings.OneOff(
-          startedAt = Instant.EPOCH,
-          pausedAt = null,
-          durations =
-            listOf(5.minutes, 10.minutes + 3.seconds, 10.minutes).map { it.toJavaDuration() },
-        ),
+      value = value,
       now = Instant.EPOCH + 7.minutes.toJavaDuration(),
-      onUpdate = {},
+      onUpdate = { value = it },
     )
   }
 }

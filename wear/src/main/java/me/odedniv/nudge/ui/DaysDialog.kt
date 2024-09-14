@@ -2,6 +2,10 @@ package me.odedniv.nudge.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,8 +54,9 @@ private fun DaysView(value: Set<DayOfWeek>, onUpdate: (Set<DayOfWeek>) -> Unit) 
 
 @Preview(device = WearDevices.LARGE_ROUND)
 @Composable
-fun DaysViewPreview() {
-  NudgeTheme {
-    DaysView(value = setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY), onUpdate = {})
+fun DaysPreview() {
+  var value by remember {
+    mutableStateOf(setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY))
   }
+  NudgeTheme { DaysView(value = value, onUpdate = { value = it }) }
 }
